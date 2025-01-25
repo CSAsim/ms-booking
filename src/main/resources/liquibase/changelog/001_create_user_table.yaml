@@ -1,0 +1,78 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001_create-users-table
+      author: Asim Penahov
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: surname
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: phone_number
+                  type: varchar(14)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(16)
+              - column:
+                  name: is_deleted
+                  type: boolean
+              - column:
+                  name: created_by
+                  type: bigserial
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: bigserial
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP(0)
+                  defaultValueComputed: now()
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP(0)
+                  defaultValueComputed: now()
+              - addForeignKeyConstraint:
+                  baseTableName: users
+                  baseColumnNames: created_by
+                  referencedTableName: users
+                  referencedColumnNames: id
+                  constraintName: fk_users_created_by
+              - addForeignKeyConstraint:
+                  baseTableName: users
+                  baseColumnNames: updated_by
+                  referencedTableName: users
+                  referencedColumnNames: id
+                  constraintName: fk_users_updated_by
+
+            remarks: This is users table to store users' info.

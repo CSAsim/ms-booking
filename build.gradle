@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.2'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.netflix.dgs.codegen' version '7.0.3'
+}
+
+group = 'az.edu.turing'
+version = 'ms-booking-0.1'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.liquibase:liquibase-core:4.29.0'
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    runtimeOnly 'org.springframework.boot:spring-boot-docker-compose'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+generateJava {
+    schemaPaths = ["${projectDir}/src/main/resources/graphql-client"]
+    packageName = 'az.edu.turing.codegen'
+    generateClient = true
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
