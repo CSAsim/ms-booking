@@ -31,6 +31,7 @@
 - void delete(Long id) — soft delete: set isDeleted field true.
 - When the user is deleted, the bookingStatus value of the bookings should also be DELETED
 - boolean existsById(Long id)
+- boolean existsByEmail(String email)
 
 
 ## Ömer (FLight Details Service)
