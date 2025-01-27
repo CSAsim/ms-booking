@@ -1,6 +1,8 @@
 package az.edu.turing.service.impl;
 
-import az.edu.turing.domain.entity.UserEntity;
+import az.edu.turing.model.UserDto;
+import az.edu.turing.model.request.user.CreateUserRequest;
+import az.edu.turing.model.request.user.UpdateUserRequest;
 import az.edu.turing.service.UserService;
 import org.springframework.stereotype.Service;
 
@@ -9,33 +11,34 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
+
     @Override
-    public List<UserEntity> findAll() {
+    public List<UserDto> findAll() {
         return List.of();
     }
 
     @Override
-    public List<UserEntity> findAllByFlightId(Long flightId) {
+    public List<UserDto> findAllByFlightId(Long flightId) {
         return List.of();
     }
 
     @Override
-    public Optional<UserEntity> findById(Long id) {
+    public Optional<UserDto> findById(Long id) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<UserEntity> findByEmail(String email) {
+    public Optional<UserDto> findByEmail(String email) {
         return Optional.empty();
     }
 
     @Override
-    public UserEntity create(UserEntity userEntity) {
+    public UserDto create(CreateUserRequest userRequest) {
         return null;
     }
 
     @Override
-    public UserEntity update(Long id, UserEntity userEntity) {
+    public UserDto update(Long id, UpdateUserRequest userRequest) {
         return null;
     }
 

@@ -1,6 +1,8 @@
 package az.edu.turing.service.impl;
 
-import az.edu.turing.domain.entity.FlightDetailsEntity;
+import az.edu.turing.model.FlightDetailsDto;
+import az.edu.turing.model.request.flightDetails.CreateFlightDetailsRequest;
+import az.edu.turing.model.request.flightDetails.UpdateFlightDetailsRequest;
 import az.edu.turing.service.FlightDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -9,28 +11,29 @@ import java.util.Optional;
 
 @Service
 public class FlightDetailsServiceImpl implements FlightDetailsService {
+
     @Override
-    public List<FlightDetailsEntity> findAll() {
+    public List<FlightDetailsDto> findAll() {
         return List.of();
     }
 
     @Override
-    public Optional<FlightDetailsEntity> findByFlightId(Long flightId) {
+    public Optional<FlightDetailsDto> findByFlightId(Long flightId) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<FlightDetailsEntity> findByFlightNumber(String flightNumber) {
+    public Optional<FlightDetailsDto> findByFlightNumber(String flightNumber) {
         return Optional.empty();
     }
 
     @Override
-    public FlightDetailsEntity create(FlightDetailsEntity details) {
+    public FlightDetailsDto create(CreateFlightDetailsRequest flightDetailsRequest) {
         return null;
     }
 
     @Override
-    public FlightDetailsEntity update(Long id, FlightDetailsEntity details) {
+    public FlightDetailsDto update(Long id, UpdateFlightDetailsRequest flightDetailsRequest) {
         return null;
     }
 

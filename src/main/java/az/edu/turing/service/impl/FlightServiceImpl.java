@@ -1,7 +1,9 @@
 package az.edu.turing.service.impl;
 
-import az.edu.turing.domain.entity.FlightEntity;
+import az.edu.turing.model.FlightDto;
 import az.edu.turing.model.enums.StatusMessage;
+import az.edu.turing.model.request.flight.CreateFlightRequest;
+import az.edu.turing.model.request.flight.UpdateFlightRequest;
 import az.edu.turing.service.FlightService;
 import org.springframework.stereotype.Service;
 
@@ -10,43 +12,44 @@ import java.util.Optional;
 
 @Service
 public class FlightServiceImpl implements FlightService {
+
     @Override
-    public List<FlightEntity> findAll() {
+    public List<FlightDto> findAll() {
         return List.of();
     }
 
     @Override
-    public List<FlightEntity> findAllInLast24Hours() {
+    public List<FlightDto> findAllInLast24Hours() {
         return List.of();
     }
 
     @Override
-    public Optional<FlightEntity> findById(Long id) {
+    public Optional<FlightDto> findById(Long id) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<FlightEntity> findByFlightNumber(String flightNumber) {
+    public Optional<FlightDto> findByFlightNumber(String flightNumber) {
         return Optional.empty();
     }
 
     @Override
-    public FlightEntity create(FlightEntity flightEntity) {
+    public FlightDto create(CreateFlightRequest flightRequest) {
         return null;
     }
 
     @Override
-    public FlightEntity update(Long id, FlightEntity flightEntity) {
+    public FlightDto update(Long id, UpdateFlightRequest flightRequest) {
         return null;
     }
 
     @Override
-    public FlightEntity updateFlightNumber(Long id, String flightNumber) {
+    public FlightDto updateFlightNumber(Long id, String flightNumber) {
         return null;
     }
 
     @Override
-    public FlightEntity updateFlightStatus(Long id, StatusMessage flightStatus) {
+    public FlightDto updateFlightStatus(Long id, StatusMessage flightStatus) {
         return null;
     }
 
