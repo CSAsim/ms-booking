@@ -1,6 +1,6 @@
 package az.edu.turing.domain.entity;
 
-import az.edu.turing.enums.StatusMessage;
+import az.edu.turing.model.enums.StatusMessage;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

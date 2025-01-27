@@ -1,6 +1,6 @@
 package az.edu.turing.domain.entity;
 
-import az.edu.turing.enums.UserRole;
+import az.edu.turing.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

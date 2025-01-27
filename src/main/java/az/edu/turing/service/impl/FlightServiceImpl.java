@@ -1,7 +1,7 @@
 package az.edu.turing.service.impl;
 
 import az.edu.turing.domain.entity.FlightEntity;
-import az.edu.turing.enums.StatusMessage;
+import az.edu.turing.model.enums.StatusMessage;
 import az.edu.turing.service.FlightService;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package az.edu.turing.service;
 
 import az.edu.turing.domain.entity.FlightEntity;
-import az.edu.turing.enums.StatusMessage;
+import az.edu.turing.model.enums.StatusMessage;
 
 import java.util.List;
 import java.util.Optional;
