@@ -25,6 +25,9 @@ public class BookingEntity extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     private UserEntity passenger;
 
+    @Column(name = "seat_number", nullable = false)
+    private String seatNumbers;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "booking_status", nullable = false)
     private StatusMessage bookingStatus;

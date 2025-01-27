@@ -36,6 +36,6 @@ public class UserEntity extends BaseEntity {
     private boolean isDeleted;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_role", nullable = false, columnDefinition = "DEFAULT true")
+    @Column(name = "user_role", nullable = false)
     private UserRole userRole;
 }

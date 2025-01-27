@@ -1,3 +1,3 @@
 databaseChangelog:
   - includeAll:
-      path: /liquibase/changelog
+      path: liquibase/changelog
