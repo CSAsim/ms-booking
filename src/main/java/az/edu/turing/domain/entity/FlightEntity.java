@@ -10,13 +10,13 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
-@SuperBuilder
 @Data
-@EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "flights")
+@EqualsAndHashCode(callSuper = true)
 public class FlightEntity extends BaseEntity {
 
     @Column(name = "flight_number", nullable = false)
