@@ -19,19 +19,14 @@ public interface FlightService {
 
     List<FlightDto> findByFlightNumber(String flightNumber);
 
-    FlightDto create(CreateFlightRequest flightRequest);
+    FlightDto create(Long id, CreateFlightRequest flightRequest);
 
-    FlightDto update(Long id, UpdateFlightRequest flightRequest);
+    FlightDto update(Long userId, Long id, UpdateFlightRequest flightRequest);
 
-    FlightDto updateFlightNumber(Long id, String flightNumber);
+    FlightDto updateFlightNumber(Long userId, Long id, String flightNumber);
 
-    FlightDto updateFlightStatus(Long id, StatusMessage flightStatus);
-
-    void decrementAvailableSeats(Long flightId);
+    FlightDto updateFlightStatus(Long userId, Long id, StatusMessage flightStatus);
 
     void delete(Long id);
 
-    boolean existsByFlightNumber(String flightNumber);
-
-    boolean existsById(Long id);
 }

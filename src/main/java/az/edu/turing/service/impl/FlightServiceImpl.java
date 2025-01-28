@@ -59,24 +59,25 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightDto create(CreateFlightRequest flightRequest) {
+    public FlightDto create(Long id, CreateFlightRequest flightRequest) {
         if (flightRepository.existsByFlightNumber(flightRequest.getFlightNumber())) {
             throw new AlreadyExistsException("Flight with number " + flightRequest.getFlightNumber() +
                     " already exists");
         }
         FlightEntity flightEntity = flightMapper.toEntity(flightRequest);
+        flightEntity.setCreatedBy(id);
         flightEntity = flightRepository.save(flightEntity);
 
         return flightMapper.toDto(flightEntity);
     }
 
     @Override
-    public FlightDto update(Long id, UpdateFlightRequest flightRequest) {
+    public FlightDto update(Long userId, Long id, UpdateFlightRequest flightRequest) {
         if (flightRequest.getDeparture() == null || flightRequest.getDestination() == null || flightRequest.getDepartureTime() == null) {
             throw new InvalidInputException("Departure, destination, and departure time must be provided.");
         }
-
         existingFlight = getFlightEntity(id);
+        existingFlight.setUpdatedBy(userId);
         existingFlight.setDestination(flightRequest.getDestination());
         existingFlight.setDeparture(flightRequest.getDeparture());
         existingFlight.setDepartureTime(flightRequest.getDepartureTime());
@@ -87,8 +88,9 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightDto updateFlightNumber(Long id, String flightNumber) {
+    public FlightDto updateFlightNumber(Long userId, Long id, String flightNumber) {
         existingFlight = getFlightEntity(id);
+        existingFlight.setUpdatedBy(userId);
         existingFlight.setFlightNumber(flightNumber);
 
         flightRepository.save(existingFlight);
@@ -97,8 +99,9 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightDto updateFlightStatus(Long id, StatusMessage flightStatus) {
+    public FlightDto updateFlightStatus(Long userId, Long id, StatusMessage flightStatus) {
         existingFlight = getFlightEntity(id);
+        existingFlight.setUpdatedBy(userId);
         existingFlight.setFlightStatus(flightStatus);
 
         flightRepository.save(existingFlight);
@@ -106,7 +109,6 @@ public class FlightServiceImpl implements FlightService {
         return flightMapper.toDto(existingFlight);
     }
 
-    @Override
     public void decrementAvailableSeats(Long flightId) {
         existingFlight = getFlightEntity(flightId);
         flightRepository.decrementAvailableSeats(flightId);
@@ -121,13 +123,11 @@ public class FlightServiceImpl implements FlightService {
         flightRepository.save(existingFlight);
     }
 
-    @Override
-    public boolean existsByFlightNumber(String flightNumber) {
+    private boolean existsByFlightNumber(String flightNumber) {
         return flightRepository.existsByFlightNumber(flightNumber);
     }
 
-    @Override
-    public boolean existsById(Long id) {
+    private boolean existsById(Long id) {
         return flightRepository.existsById(id);
     }
 
