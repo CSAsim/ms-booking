@@ -26,7 +26,7 @@ public abstract class BaseEntity implements Serializable {
     @Column(name = "created_by", updatable = false)
     private Long createdBy;
     @Column(name = "updated_by")
-    private Long updatedABy;
+    private Long updatedBy;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
