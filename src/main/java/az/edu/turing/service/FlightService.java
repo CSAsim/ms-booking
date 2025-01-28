@@ -7,7 +7,6 @@ import az.edu.turing.model.request.flight.UpdateFlightRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface FlightService {
 
@@ -16,7 +15,7 @@ public interface FlightService {
 
     List<FlightDto> findAllIn24Hours();
 
-    Optional<FlightDto> findById(Long id);
+    FlightDto findById(Long id);
 
     List<FlightDto> findByFlightNumber(String flightNumber);
 
@@ -27,6 +26,8 @@ public interface FlightService {
     FlightDto updateFlightNumber(Long id, String flightNumber);
 
     FlightDto updateFlightStatus(Long id, StatusMessage flightStatus);
+
+    void decrementAvailableSeats(Long flightId);
 
     void delete(Long id);
 

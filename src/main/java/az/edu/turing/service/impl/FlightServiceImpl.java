@@ -18,12 +18,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class FlightServiceImpl implements FlightService {
 
+    private FlightEntity existingFlight;
     private final FlightMapper flightMapper;
     private final FlightRepository flightRepository;
 
@@ -47,9 +47,9 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public Optional<FlightDto> findById(Long id) {
-        Optional<FlightEntity> flight = flightRepository.findById(id);
-        return flight.map(flightMapper::toDto);
+    public FlightDto findById(Long id) {
+        FlightEntity flightEntity = getFlightEntity(id);
+        return flightMapper.toDto(flightEntity);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public FlightDto create(CreateFlightRequest flightRequest) {
-        if(flightRepository.existsByFlightNumber(flightRequest.getFlightNumber())){
+        if (flightRepository.existsByFlightNumber(flightRequest.getFlightNumber())) {
             throw new AlreadyExistsException("Flight with number " + flightRequest.getFlightNumber() +
                     " already exists");
         }
@@ -76,7 +76,7 @@ public class FlightServiceImpl implements FlightService {
             throw new InvalidInputException("Departure, destination, and departure time must be provided.");
         }
 
-        FlightEntity existingFlight = getFlightEntity(id);
+        existingFlight = getFlightEntity(id);
         existingFlight.setDestination(flightRequest.getDestination());
         existingFlight.setDeparture(flightRequest.getDeparture());
         existingFlight.setDepartureTime(flightRequest.getDepartureTime());
@@ -88,7 +88,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public FlightDto updateFlightNumber(Long id, String flightNumber) {
-        FlightEntity existingFlight = getFlightEntity(id);
+        existingFlight = getFlightEntity(id);
         existingFlight.setFlightNumber(flightNumber);
 
         flightRepository.save(existingFlight);
@@ -98,7 +98,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public FlightDto updateFlightStatus(Long id, StatusMessage flightStatus) {
-        FlightEntity existingFlight = getFlightEntity(id);
+        existingFlight = getFlightEntity(id);
         existingFlight.setFlightStatus(flightStatus);
 
         flightRepository.save(existingFlight);
@@ -107,8 +107,14 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
+    public void decrementAvailableSeats(Long flightId) {
+        existingFlight = getFlightEntity(flightId);
+        flightRepository.decrementAvailableSeats(flightId);
+    }
+
+    @Override
     public void delete(Long id) {
-        FlightEntity existingFlight = getFlightEntity(id);
+        existingFlight = getFlightEntity(id);
 
         existingFlight.setFlightStatus(StatusMessage.CANCELLED);
 
