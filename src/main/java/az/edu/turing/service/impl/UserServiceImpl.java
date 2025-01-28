@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +25,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> findAll() {
         return userRepository.findAll().stream()
                 .map(userMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -36,26 +34,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> findById(Long id) {
+    public UserDto findById(Long id) {
         return userRepository.findById(id)
-                .map(userMapper::toDto);
-    }
-
-    @Override
-    public Optional<UserDto> findByEmail(String email) {
-        return userRepository.findAll().stream()
-                .filter(user -> user.getEmail().equals(email))
                 .map(userMapper::toDto)
-                .findFirst();
+                .orElseThrow(() -> new NotFoundException("User not found for id: " + id));
     }
 
     @Override
-    public UserDto create(CreateUserRequest userRequest) {
-        if (userRepository.existsByEmail(userRequest.getEmail())) {
-            throw new AlreadyExistsException("User with email " + userRequest.getEmail() + " already exists.");
+    public UserDto findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(userMapper::toDto)
+                .orElseThrow(() -> new NotFoundException("User not found for email: " + email));
+    }
+
+    @Override
+    public UserDto create(CreateUserRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new AlreadyExistsException("User with email " + request.getEmail() + " already exists.");
         }
 
-        UserEntity user = userMapper.fromCreateRequest(userRequest);
+        UserEntity user = userMapper.toEntity(request);
         user.setDeleted(false);
         user = userRepository.save(user);
         return userMapper.toDto(user);

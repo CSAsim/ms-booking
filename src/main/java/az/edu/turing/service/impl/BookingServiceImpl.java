@@ -25,7 +25,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final FlightRepository flightRepository;
-    private BookingMapper bookingMapper;
+    private final BookingMapper bookingMapper;
 
     @Override
     public List<BookingDto> findAll() {
@@ -35,7 +35,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findAllByFlightId(long id) {
+    public List<BookingDto> findAllByFlightId(Long id) {
         existsByFlightId(id);
         return bookingMapper.toDto(
                 bookingRepository.findAllByFlightId(id)
@@ -43,7 +43,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findAllByPassengerId(long id) {
+    public List<BookingDto> findAllByPassengerId(Long id) {
         existsByPassengerId(id);
         return bookingMapper.toDto(
                 bookingRepository.findAllByPassengerId(id)
@@ -51,15 +51,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findAllByFlightNumber(String flightNumber) {
-        existsByFlightNumber(flightNumber);
-        return bookingMapper.toDto(
-                bookingRepository.findAllByFlightNumber(flightNumber)
-        );
-    }
-
-    @Override
-    public BookingDto createBooking(CreateBookingRequest request) {
+    public BookingDto createBooking(Long userId, CreateBookingRequest request) {
+        existsByUserId(userId);
         FlightEntity flight = flightRepository.findById(request.getFlightId())
                 .orElseThrow(() -> new NotFoundException("Flight not found for id: " + request.getFlightId()));
 
@@ -69,43 +62,74 @@ public class BookingServiceImpl implements BookingService {
         booking.setFlight(flight);
         booking.setPassenger(passenger);
         booking.setBookingStatus(StatusMessage.PENDING);
-        return null;
+        booking.setCreatedBy(userId);
+        booking.setUpdatedBy(userId);
+
+        return bookingMapper.toDto(bookingRepository.save(booking));
+    }
+
+
+    @Override
+    public BookingDto updateBooking(Long userId, Long id, UpdateBookingRequest request) {
+        existsByUserId(userId);
+        return bookingRepository.findById(id)
+                .map(bookingEntity -> {
+                    bookingEntity.setSeatNumber(request.getSeatNumber());
+                    bookingEntity.setBookingStatus(request.getBookingStatus());
+                    bookingEntity.setTotalAmount(request.getTotalAmount());
+                    bookingEntity.setUpdatedBy(userId);
+                    BookingEntity savedBookingEntity = bookingRepository.save(bookingEntity);
+                    return bookingMapper.toDto(savedBookingEntity);
+                })
+                .orElseThrow(() -> new NotFoundException("Booking not found for id: " + id));
     }
 
     @Override
-    public BookingDto updateBooking(long id, UpdateBookingRequest request) {
+    public BookingDto updateBookingStatus(Long userId, Long id, StatusMessage bookingStatus) {
 
-        return null;
+        existsByUserId(userId);
+        return bookingRepository.findById(id)
+                .map(bookingEntity -> {
+                            bookingEntity.setBookingStatus(bookingStatus);
+                            BookingEntity updatedBookingEntity = bookingRepository.save(bookingEntity);
+                            return bookingMapper.toDto(updatedBookingEntity);
+                        }
+                )
+                .orElseThrow(() -> new NotFoundException("Booking not found for id: " + id));
     }
 
     @Override
-    public BookingDto updateBookingStatus(long id, StatusMessage bookingStatus) {
-        return null;
+    public void deleteBooking(Long userId, Long id) {
+        existsByUserId(userId);
+        existsById(id);
+        bookingRepository.findById(id)
+                .ifPresent(booking -> {
+                    booking.setBookingStatus(StatusMessage.CANCELLED);
+                    bookingRepository.save(booking);
+                });
     }
 
-    @Override
-    public void deleteBooking(long id) {
-
-    }
-
-    @Override
-    public void existsByFlightId(long id) {
-        if(!bookingRepository.existsByFlightId(id)) {
+    private void existsByFlightId(Long id) {
+        if (!bookingRepository.existsByFlightId(id)) {
             throw new NotFoundException("Booking not found with flight id:" + id);
         }
     }
 
-    @Override
-    public void existsByFlightNumber(String flightNumber) {
-        if(!bookingRepository.existsByFlightNumber(flightNumber)) {
-            throw new NotFoundException("Booking not found with flight number:" + flightNumber);
+    private void existsByPassengerId(Long id) {
+        if (!bookingRepository.existsByPassengerId(id)) {
+            throw new NotFoundException("Booking not found with passenger id:" + id);
         }
     }
 
-    @Override
-    public void existsByPassengerId(long id) {
-        if(!bookingRepository.existsByPassengerId(id)) {
-            throw new NotFoundException("Booking not found with passenger id:" + id);
+    private void existsByUserId(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User not found for id: " + userId);
+        }
+    }
+
+    private void existsById(Long id) {
+        if(!bookingRepository.existsById(id)) {
+            throw new NotFoundException("Booking not found for id:" + id);
         }
     }
 }

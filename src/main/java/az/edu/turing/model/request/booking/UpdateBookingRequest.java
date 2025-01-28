@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateBookingRequest {
 
-    private String seatNumbers;
+    private int seatNumber;
     private StatusMessage bookingStatus;
     private Double totalAmount;
 }

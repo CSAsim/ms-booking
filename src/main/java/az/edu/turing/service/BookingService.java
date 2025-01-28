@@ -10,16 +10,18 @@ import java.util.List;
 public interface BookingService {
 
     List<BookingDto> findAll();
-    List<BookingDto> findAllByFlightId(long id);
-    List<BookingDto> findAllByPassengerId(long id);
-    List<BookingDto> findAllByFlightNumber(String flightNumber);
-    BookingDto createBooking(CreateBookingRequest request);
-    BookingDto updateBooking(long id, UpdateBookingRequest request);
-    BookingDto updateBookingStatus(long id, StatusMessage bookingStatus);
-    void deleteBooking(long id);
-    void existsByFlightId(long id);
-    void existsByFlightNumber(String flightNumber);
-    void existsByPassengerId(long id);
+
+    List<BookingDto> findAllByFlightId(Long id);
+
+    List<BookingDto> findAllByPassengerId(Long id);
+
+    BookingDto createBooking(Long userId, CreateBookingRequest request);
+
+    BookingDto updateBooking(Long userId, Long id, UpdateBookingRequest request);
+
+    BookingDto updateBookingStatus(Long userId, Long id, StatusMessage bookingStatus);
+
+    void deleteBooking(Long userId, Long id);
 
 
 }

@@ -15,16 +15,10 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
     List<BookingEntity> findAllByFlightId(@Param("flightId") Long id);
 
     @Query(value = "SELECT b FROM BookingEntity b WHERE b.passenger.id = :passengerId")
-    List<BookingEntity> findAllByPassengerId(@Param("userId") Long id);
-
-    @Query("SELECT b FROM BookingEntity b WHERE b.flight.flightNumber = :flightNumber")
-    List<BookingEntity> findAllByFlightNumber(@Param("flightNumber") String flightNumber);
+    List<BookingEntity> findAllByPassengerId(@Param("passengerId") Long id);
 
     @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM BookingEntity b WHERE b.flight.id = :flightId")
     boolean existsByFlightId(@Param("flightId") Long id);
-
-    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM BookingEntity b WHERE b.flight.flightNumber = :flightNumber")
-    boolean existsByFlightNumber(@Param("flightNumber") String flightNumber);
 
     @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM BookingEntity b WHERE b.passenger.id = :passengerId")
     boolean existsByPassengerId(@Param("passengerId") Long id);

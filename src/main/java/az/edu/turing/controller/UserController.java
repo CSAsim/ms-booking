@@ -25,16 +25,12 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
-        return userService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(userService.findById(id));
     }
 
     @GetMapping("/email")
     public ResponseEntity<UserDto> getUserByEmail(@RequestParam String email) {
-        return userService.findByEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(userService.findByEmail(email));
     }
 
     @PostMapping
