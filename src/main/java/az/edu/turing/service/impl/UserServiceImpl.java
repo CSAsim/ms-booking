@@ -36,19 +36,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> findById(Long id) {
-        UserEntity user = userRepository.findById(id)
+    public UserDto findById(Long id) {
+        return userRepository.findById(id)
+                .map(userMapper::toDto)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-        return Optional.of(userMapper.toDto(user));
     }
 
     @Override
-    public Optional<UserDto> findByEmail(String email) {
-        UserEntity user = userRepository.findAll().stream()
-                .filter(u -> u.getEmail().equals(email))
-                .findFirst()
+    public UserDto findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(userMapper::toDto)
                 .orElseThrow(() -> new NotFoundException("User not found with email: " + email));
-        return Optional.of(userMapper.toDto(user));
     }
 
     @Override
@@ -57,16 +55,8 @@ public class UserServiceImpl implements UserService {
             throw new AlreadyExistsException("User with email " + userRequest.getEmail() + " already exists.");
         }
 
-        UserEntity user = UserEntity.builder()
-                .name(userRequest.getName())
-                .surname(userRequest.getSurname())
-                .email(userRequest.getEmail())
-                .phoneNumber(userRequest.getPhoneNumber())
-                .password(userRequest.getPassword())
-                .userRole(userRequest.getUserRole())
-                .isDeleted(false)
-                .build();
-
+        UserEntity user = userMapper.fromCreateRequest(userRequest);
+        user.setDeleted(false);
         user = userRepository.save(user);
         return userMapper.toDto(user);
     }

@@ -36,6 +36,20 @@ public abstract class BaseEntity implements Serializable {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+
+
 }
 
 

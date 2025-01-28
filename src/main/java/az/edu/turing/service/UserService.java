@@ -11,8 +11,8 @@ public interface UserService {
 
     List<UserDto> findAll();
     List<UserDto> findAllByFlightId(Long flightId); // Write @Query in left join.
-    Optional<UserDto> findById(Long id);
-    Optional<UserDto> findByEmail(String email);
+    UserDto findById(Long id);
+    UserDto findByEmail(String email);
     UserDto create(CreateUserRequest userRequest);
     UserDto update(Long id, UpdateUserRequest userRequest);
     void delete(Long id); // Soft delete: Set isDeleted field to true.

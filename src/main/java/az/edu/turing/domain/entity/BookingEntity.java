@@ -26,7 +26,7 @@ public class BookingEntity extends BaseEntity {
     private UserEntity passenger;
 
     @Column(name = "seat_number", nullable = false)
-    private String seatNumbers;
+    private Integer seatNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "booking_status", nullable = false)
