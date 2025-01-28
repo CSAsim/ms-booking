@@ -2,6 +2,8 @@ package az.edu.turing.service.impl;
 
 import az.edu.turing.domain.entity.UserEntity;
 import az.edu.turing.domain.repository.UserRepository;
+import az.edu.turing.exception.AlreadyExistsException;
+import az.edu.turing.exception.NotFoundException;
 import az.edu.turing.mapper.UserMapper;
 import az.edu.turing.model.UserDto;
 import az.edu.turing.model.request.user.CreateUserRequest;
@@ -30,25 +32,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> findAllByFlightId(Long flightId) {
-        return List.of(); // TODO: Flight ile baghlanacaq
+        return List.of(); // TODO: Flight ile baglanacak
     }
 
     @Override
     public Optional<UserDto> findById(Long id) {
-        return userRepository.findById(id)
-                .map(userMapper::toDto);
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+        return Optional.of(userMapper.toDto(user));
     }
 
     @Override
     public Optional<UserDto> findByEmail(String email) {
-        return userRepository.findAll().stream()
-                .filter(user -> user.getEmail().equals(email))
-                .map(userMapper::toDto)
-                .findFirst();
+        UserEntity user = userRepository.findAll().stream()
+                .filter(u -> u.getEmail().equals(email))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("User not found with email: " + email));
+        return Optional.of(userMapper.toDto(user));
     }
 
     @Override
     public UserDto create(CreateUserRequest userRequest) {
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
+            throw new AlreadyExistsException("User with email " + userRequest.getEmail() + " already exists.");
+        }
+
         UserEntity user = UserEntity.builder()
                 .name(userRequest.getName())
                 .surname(userRequest.getSurname())
@@ -66,7 +74,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto update(Long id, UpdateUserRequest userRequest) {
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
         if (userRequest.getName() != null) user.setName(userRequest.getName());
         if (userRequest.getSurname() != null) user.setSurname(userRequest.getSurname());
@@ -82,7 +90,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+
+        // Soft delete
         user.setDeleted(true);
         userRepository.save(user);
     }
@@ -94,7 +104,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean existsByEmail(String email) {
-        return userRepository.findAll().stream()
-                .anyMatch(user -> user.getEmail().equals(email));
+        return userRepository.existsByEmail(email);
     }
 }
