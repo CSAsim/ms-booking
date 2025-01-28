@@ -4,6 +4,7 @@ import az.edu.turing.model.enums.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 
@@ -18,13 +19,15 @@ public class CreateUserRequest {
     private String surname;
 
     @Email(message = "Invalid email format")
-    @NotBlank(message = "Email cannot be empty")
     private String email;
 
     private String phoneNumber;
 
-    @NotBlank(message = "Password cannot be empty")
+    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$")
     private String password;
+
+    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$")
+    private String confirmPassword;
 
     @NotNull(message = "User role must be specified")
     private UserRole userRole;
