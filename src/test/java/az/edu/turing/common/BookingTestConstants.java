@@ -1,4 +1,4 @@
-package az.edu.turing.constants;
+package az.edu.turing.common;
 
 import az.edu.turing.domain.entity.BookingEntity;
 import az.edu.turing.domain.entity.FlightEntity;

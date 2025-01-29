@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static az.edu.turing.constants.BookingTestConstants.*;
+import static az.edu.turing.common.BookingTestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
