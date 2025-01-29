@@ -35,7 +35,7 @@ public class FlightController {
     private final FlightService flightService;
 
     @GetMapping
-    public ResponseEntity<List<FlightDto>> findAll(@RequestParam(required = false) String departure,
+    public ResponseEntity<List<FlightDto>> getAll(@RequestParam(required = false) String departure,
                                                    @RequestParam(required = false) String destination,
                                                    @RequestParam(required = false) LocalDateTime departureTime,
                                                    @RequestParam(required = false) LocalDateTime arrivalTime) {
@@ -44,19 +44,19 @@ public class FlightController {
     }
 
     @GetMapping("/upcoming")
-    public ResponseEntity<List<FlightDto>> findAllIn24Hours() {
+    public ResponseEntity<List<FlightDto>> getAllIn24Hours() {
         List<FlightDto> flights = flightService.findAllIn24Hours();
         return ResponseEntity.ok(flights);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FlightDto> findById(@PathVariable Long id) {
+    public ResponseEntity<FlightDto> getById(@PathVariable Long id) {
         FlightDto flightDto = flightService.findById(id);
         return ResponseEntity.ok(flightDto);
     }
 
     @GetMapping("/number/{flightNumber}")
-    public ResponseEntity<List<FlightDto>> findByFlightNumber(@PathVariable String flightNumber) {
+    public ResponseEntity<List<FlightDto>> getByFlightNumber(@PathVariable String flightNumber) {
         List<FlightDto> flights = flightService.findByFlightNumber(flightNumber);
         return ResponseEntity.ok(flights);
     }
@@ -81,7 +81,7 @@ public class FlightController {
         return ResponseEntity.ok(updatedFlight);
     }
 
-    @PatchMapping("/{id}/number")
+    @PatchMapping("/{id}/status")
     public ResponseEntity<FlightDto> updateFlightStatus(@RequestHeader Long userId, @PathVariable Long id,
                                                         @NotNull @RequestParam StatusMessage flightStatus) {
         FlightDto updatedFlight = flightService.updateFlightStatus(userId, id, flightStatus);
