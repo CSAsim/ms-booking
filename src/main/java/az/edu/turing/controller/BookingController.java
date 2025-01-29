@@ -8,6 +8,7 @@ import az.edu.turing.service.BookingService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,17 +25,23 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping
-    public ResponseEntity<List<BookingDto>> getAll(
-            @RequestParam(value = "passengerId", required = false) Long passengerId) {
+    public ResponseEntity<Page<BookingDto>> getAll(
+            @RequestParam(value = "passengerId", required = false) Long passengerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
         if (passengerId != null) {
-            return ResponseEntity.ok(bookingService.findAllByPassengerId(passengerId));
+            return ResponseEntity.ok(bookingService.findAllByPassengerId(passengerId, page, size, sortBy));
         }
-        return ResponseEntity.ok(bookingService.findAll());
+        return ResponseEntity.ok(bookingService.findAll(page, size, sortBy));
     }
 
     @GetMapping("/{flightId}")
-    public ResponseEntity<List<BookingDto>> getAllByFlightId(@PathVariable("flightId") long flightId) {
-        return ResponseEntity.ok(bookingService.findAllByFlightId(flightId));
+    public ResponseEntity<Page<BookingDto>> getAllByFlightId(@PathVariable("flightId") Long flightId,
+                                                             @RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size,
+                                                             @RequestParam(defaultValue = "id") String sortBy) {
+        return ResponseEntity.ok(bookingService.findAllByFlightId(flightId, page, size, sortBy));
     }
 
     @PostMapping

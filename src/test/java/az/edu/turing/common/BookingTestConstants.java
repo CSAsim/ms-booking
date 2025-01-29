@@ -8,6 +8,9 @@ import az.edu.turing.model.enums.StatusMessage;
 import az.edu.turing.model.enums.UserRole;
 import az.edu.turing.model.request.booking.CreateBookingRequest;
 import az.edu.turing.model.request.booking.UpdateBookingRequest;
+import org.springframework.data.domain.*;
+
+import java.util.List;
 
 public interface BookingTestConstants {
 
@@ -15,9 +18,14 @@ public interface BookingTestConstants {
     Long USER_ID = 1L;
     Long FLIGHT_ID = 2L;
     Long PASSENGER_ID = 2L;
+    int PAGE = 1;
+    int SIZE = 4;
+    String SORT_BY = "id";
     Integer SEAT_NUMBER = 23;
     Double TOTAL_AMOUNT = 234.0;
     String NAME = "test_name";
+
+    Pageable PAGEABLE = PageRequest.of(PAGE, SIZE, Sort.by(SORT_BY));
 
     UserEntity USER_ENTITY = UserEntity.builder()
             .id(ID)
@@ -57,4 +65,7 @@ public interface BookingTestConstants {
             .seatNumber(SEAT_NUMBER)
             .totalAmount(TOTAL_AMOUNT)
             .build();
+
+    Page<BookingEntity> BOOKING_ENTITY_PAGE = new PageImpl<>(List.of(BOOKING_ENTITY), PAGEABLE, 1);
+    Page<BookingDto> BOOKING_DTO_PAGE = new PageImpl<>(List.of(BOOKING_DTO), PAGEABLE, 1);
 }

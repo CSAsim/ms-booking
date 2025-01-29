@@ -7,6 +7,7 @@ import az.edu.turing.model.request.booking.UpdateBookingRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -20,6 +21,11 @@ public interface BookingMapper {
     BookingDto toDto(BookingEntity entity);
 
     List<BookingDto> toDto(List<BookingEntity> entity);
+
+    default Page<BookingDto> toDto(Page<BookingEntity> bookingEntities) {
+        return bookingEntities.map(this::toDto);
+    }
+
 
     @Mapping(source = "flightId", target = "flight.id")
     @Mapping(source = "passengerId", target = "passenger.id")
