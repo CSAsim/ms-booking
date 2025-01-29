@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,31 +47,31 @@ class BookingServiceTest {
 
     @Test
     void findAll_Should_ReturnSuccess() {
-        given(bookingRepository.findAll()).willReturn(List.of(BOOKING_ENTITY));
-        given(bookingMapper.toDto(List.of(BOOKING_ENTITY))).willReturn(List.of(BOOKING_DTO));
+        given(bookingRepository.findAll(PAGEABLE)).willReturn(BOOKING_ENTITY_PAGE);
+        given(bookingMapper.toDto(BOOKING_ENTITY_PAGE)).willReturn(BOOKING_DTO_PAGE);
 
-        List<BookingDto> result = bookingService.findAll();
+        Page<BookingDto> result = bookingService.findAll(PAGE, SIZE, SORT_BY);
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(List.of(BOOKING_DTO), result);
+        assertEquals(List.of(BOOKING_DTO), result.getContent());
 
-        then(bookingRepository).should(times(1)).findAll();
+        then(bookingRepository).should(times(1)).findAll(PAGEABLE);
     }
 
     @Test
     void findAllByFlightId_Should_ReturnSuccess() {
-        given(bookingRepository.findAllByFlightId(FLIGHT_ID)).willReturn(List.of(BOOKING_ENTITY));
+        given(bookingRepository.findAllByFlightId(FLIGHT_ID, PAGEABLE)).willReturn(BOOKING_ENTITY_PAGE);
         given(flightRepository.existsById(FLIGHT_ID)).willReturn(true);
-        given(bookingMapper.toDto(List.of(BOOKING_ENTITY))).willReturn(List.of(BOOKING_DTO));
+        given(bookingMapper.toDto(BOOKING_ENTITY_PAGE)).willReturn(BOOKING_DTO_PAGE);
 
-        List<BookingDto> result = bookingService.findAllByFlightId(FLIGHT_ID);
+        Page<BookingDto> result = bookingService.findAllByFlightId(FLIGHT_ID, PAGE, SIZE, SORT_BY);
 
         assertNotNull(result);
-        assertEquals(List.of(BOOKING_DTO), result);
+        assertEquals(List.of(BOOKING_DTO), result.getContent());
         assertFalse(result.isEmpty());
 
-        then(bookingRepository).should(times(1)).findAllByFlightId(FLIGHT_ID);
+        then(bookingRepository).should(times(1)).findAllByFlightId(FLIGHT_ID, PAGEABLE);
     }
 
     @Test
@@ -78,26 +79,26 @@ class BookingServiceTest {
         given(flightRepository.existsById(FLIGHT_ID)).willReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> bookingService.findAllByFlightId(FLIGHT_ID));
+                () -> bookingService.findAllByFlightId(FLIGHT_ID, PAGE, SIZE, SORT_BY));
 
         assertEquals("Flight not found for id: " + FLIGHT_ID, exception.getMessage());
 
-        then(bookingRepository).should(never()).findAllByFlightId(FLIGHT_ID);
+        then(bookingRepository).should(never()).findAllByFlightId(FLIGHT_ID, PAGEABLE);
     }
 
     @Test
     void findAllByPassengerId_Should_ReturnSuccess() {
-        given(bookingRepository.findAllByPassengerId(PASSENGER_ID)).willReturn(List.of(BOOKING_ENTITY));
+        given(bookingRepository.findAllByPassengerId(PASSENGER_ID, PAGEABLE)).willReturn(BOOKING_ENTITY_PAGE);
         given(userRepository.existsById(PASSENGER_ID)).willReturn(true);
-        given(bookingMapper.toDto(List.of(BOOKING_ENTITY))).willReturn(List.of(BOOKING_DTO));
+        given(bookingMapper.toDto(BOOKING_ENTITY_PAGE)).willReturn(BOOKING_DTO_PAGE);
 
-        List<BookingDto> result = bookingService.findAllByPassengerId(PASSENGER_ID);
+        Page<BookingDto> result = bookingService.findAllByPassengerId(PASSENGER_ID, PAGE, SIZE, SORT_BY);
 
         assertNotNull(result);
-        assertEquals(List.of(BOOKING_DTO), result);
+        assertEquals(List.of(BOOKING_DTO), result.getContent());
         assertFalse(result.isEmpty());
 
-        then(bookingRepository).should(times(1)).findAllByPassengerId(PASSENGER_ID);
+        then(bookingRepository).should(times(1)).findAllByPassengerId(PASSENGER_ID, PAGEABLE);
     }
 
     @Test
@@ -105,11 +106,11 @@ class BookingServiceTest {
         given(userRepository.existsById(PASSENGER_ID)).willReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> bookingService.findAllByPassengerId(PASSENGER_ID));
+                () -> bookingService.findAllByPassengerId(PASSENGER_ID, PAGE, SIZE, SORT_BY));
 
         assertEquals("Passenger not found for id: " + PASSENGER_ID, exception.getMessage());
 
-        then(bookingRepository).should(never()).findAllByPassengerId(PASSENGER_ID);
+        then(bookingRepository).should(never()).findAllByPassengerId(PASSENGER_ID, PAGEABLE);
     }
 
     @Test

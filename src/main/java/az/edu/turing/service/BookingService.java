@@ -4,16 +4,17 @@ import az.edu.turing.model.BookingDto;
 import az.edu.turing.model.enums.StatusMessage;
 import az.edu.turing.model.request.booking.CreateBookingRequest;
 import az.edu.turing.model.request.booking.UpdateBookingRequest;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface BookingService {
 
-    List<BookingDto> findAll();
+    Page<BookingDto> findAll(int page, int size, String sortBy);
 
-    List<BookingDto> findAllByFlightId(Long id);
+    Page<BookingDto> findAllByFlightId(Long id, int page, int size, String sortBy);
 
-    List<BookingDto> findAllByPassengerId(Long id);
+    Page<BookingDto> findAllByPassengerId(Long id, int page, int size, String sortBy);
 
     BookingDto createBooking(Long userId, CreateBookingRequest request);
 

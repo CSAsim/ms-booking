@@ -14,9 +14,11 @@ import az.edu.turing.model.request.booking.CreateBookingRequest;
 import az.edu.turing.model.request.booking.UpdateBookingRequest;
 import az.edu.turing.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,25 +30,28 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
 
     @Override
-    public List<BookingDto> findAll() {
+    public Page<BookingDto> findAll(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
         return bookingMapper.toDto(
-                bookingRepository.findAll()
+                bookingRepository.findAll(pageable)
         );
     }
 
     @Override
-    public List<BookingDto> findAllByFlightId(Long id) {
+    public Page<BookingDto> findAllByFlightId(Long id, int page, int size, String sortBy) {
         existsByFlightId(id);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
         return bookingMapper.toDto(
-                bookingRepository.findAllByFlightId(id)
+                bookingRepository.findAllByFlightId(id, pageable)
         );
     }
 
     @Override
-    public List<BookingDto> findAllByPassengerId(Long id) {
+    public Page<BookingDto> findAllByPassengerId(Long id, int page, int size, String sortBy) {
         existsByPassengerId(id);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
         return bookingMapper.toDto(
-                bookingRepository.findAllByPassengerId(id)
+                bookingRepository.findAllByPassengerId(id, pageable)
         );
     }
 
