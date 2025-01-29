@@ -1,8 +1,10 @@
 package az.edu.turing.service.impl;
 
 import az.edu.turing.domain.entity.UserEntity;
+import az.edu.turing.domain.repository.FlightRepository;
 import az.edu.turing.domain.repository.UserRepository;
 import az.edu.turing.exception.AlreadyExistsException;
+import az.edu.turing.exception.InvalidInputException;
 import az.edu.turing.exception.NotFoundException;
 import az.edu.turing.mapper.UserMapper;
 import az.edu.turing.model.UserDto;
@@ -19,6 +21,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final FlightRepository flightRepository;
     private final UserMapper userMapper;
 
     @Override
@@ -30,7 +33,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> findAllByFlightId(Long flightId) {
-        return List.of(); // TODO: Flight ile baglanacak
+        if(!flightRepository.existsById(flightId)) {
+            throw new NotFoundException("Flight not found for id:" + flightId);
+        }
+        return userMapper.toDto(userRepository.findAllByFlightId(flightId));
     }
 
     @Override
@@ -48,19 +54,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto create(CreateUserRequest request) {
+    public UserDto create(Long userId, CreateUserRequest request) {
+
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new InvalidInputException("Password do not match");
+        }
+
+        existsByHeaderId(userId);
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new AlreadyExistsException("User with email " + request.getEmail() + " already exists.");
         }
 
         UserEntity user = userMapper.toEntity(request);
         user.setDeleted(false);
-        user = userRepository.save(user);
-        return userMapper.toDto(user);
+        user.setCreatedBy(userId);
+        user.setUpdatedBy(userId);
+        return userMapper.toDto(userRepository.save(user));
     }
 
+
     @Override
-    public UserDto update(Long id, UpdateUserRequest userRequest) {
+    public UserDto update(Long userId, Long id, UpdateUserRequest userRequest) {
+
+        existsByHeaderId(userId);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
@@ -71,27 +87,37 @@ public class UserServiceImpl implements UserService {
         if (userRequest.getPassword() != null) user.setPassword(userRequest.getPassword());
         if (userRequest.getUserRole() != null) user.setUserRole(userRequest.getUserRole());
 
-        user = userRepository.save(user);
-        return userMapper.toDto(user);
+        user.setUpdatedBy(userId);
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long userId, Long id) {
+        existsByHeaderId(userId);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
         // Soft delete
         user.setDeleted(true);
+        user.setUpdatedBy(userId);
         userRepository.save(user);
     }
 
-    @Override
-    public boolean existsById(Long id) {
-        return userRepository.existsById(id);
+    private void existsByHeaderId(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User not found for header id: " + userId);
+        }
     }
 
-    @Override
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+    private void existsById(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("User not found for id: " + id);
+        }
+    }
+
+    private void existsByEmail(String email) {
+        if (!userRepository.existsByEmail(email)) {
+            throw new NotFoundException("User not found for email: " + email);
+        }
     }
 }
