@@ -1,7 +1,7 @@
 package az.edu.turing.model.request.flight;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,9 +20,11 @@ public class CreateFlightRequest {
     private String destination;
     private LocalDateTime departureTime;
 
+    private LocalDateTime arrivalTime;
+
     @NotBlank
     private String flightNumber;
 
-    @Size(min = 0)
+    @Min(value = 0)
     private int availableSeats;
 }

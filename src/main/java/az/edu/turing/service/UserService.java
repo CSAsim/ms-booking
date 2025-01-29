@@ -16,13 +16,9 @@ public interface UserService {
 
     UserDto findByEmail(String email);
 
-    UserDto create(CreateUserRequest userRequest);
+    UserDto create(Long userId, CreateUserRequest userRequest);
 
-    UserDto update(Long id, UpdateUserRequest userRequest);
+    UserDto update(Long userId, Long id, UpdateUserRequest userRequest);
 
-    void delete(Long id); // Soft delete: Set isDeleted field to true.
-
-    boolean existsById(Long id);
-
-    boolean existsByEmail(String email);
+    void delete(Long userId, Long id);
 }

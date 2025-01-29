@@ -52,12 +52,15 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto createBooking(Long userId, CreateBookingRequest request) {
+
         existsByUserId(userId);
         FlightEntity flight = flightRepository.findById(request.getFlightId())
                 .orElseThrow(() -> new NotFoundException("Flight not found for id: " + request.getFlightId()));
-
         UserEntity passenger = userRepository.findById(request.getPassengerId())
                 .orElseThrow(() -> new NotFoundException("Passenger not found for id:" + request.getPassengerId()));
+
+        flightRepository.decrementAvailableSeats(request.getFlightId());
+
         BookingEntity booking = bookingMapper.toEntity(request);
         booking.setFlight(flight);
         booking.setPassenger(passenger);
