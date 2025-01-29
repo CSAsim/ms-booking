@@ -52,15 +52,12 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto createBooking(Long userId, CreateBookingRequest request) {
-
         existsByUserId(userId);
         FlightEntity flight = flightRepository.findById(request.getFlightId())
                 .orElseThrow(() -> new NotFoundException("Flight not found for id: " + request.getFlightId()));
         UserEntity passenger = userRepository.findById(request.getPassengerId())
-                .orElseThrow(() -> new NotFoundException("Passenger not found for id:" + request.getPassengerId()));
-
+                .orElseThrow(() -> new NotFoundException("Passenger not found for id: " + request.getPassengerId()));
         flightRepository.decrementAvailableSeats(request.getFlightId());
-
         BookingEntity booking = bookingMapper.toEntity(request);
         booking.setFlight(flight);
         booking.setPassenger(passenger);
@@ -94,6 +91,7 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findById(id)
                 .map(bookingEntity -> {
                             bookingEntity.setBookingStatus(bookingStatus);
+                            bookingEntity.setUpdatedBy(userId);
                             BookingEntity updatedBookingEntity = bookingRepository.save(bookingEntity);
                             return bookingMapper.toDto(updatedBookingEntity);
                         }
@@ -113,14 +111,14 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void existsByFlightId(Long id) {
-        if (!bookingRepository.existsByFlightId(id)) {
-            throw new NotFoundException("Booking not found with flight id:" + id);
+        if (!flightRepository.existsById(id)) {
+            throw new NotFoundException("Flight not found for id: " + id);
         }
     }
 
     private void existsByPassengerId(Long id) {
-        if (!bookingRepository.existsByPassengerId(id)) {
-            throw new NotFoundException("Booking not found with passenger id:" + id);
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("Passenger not found for id: " + id);
         }
     }
 
@@ -132,7 +130,7 @@ public class BookingServiceImpl implements BookingService {
 
     private void existsById(Long id) {
         if(!bookingRepository.existsById(id)) {
-            throw new NotFoundException("Booking not found for id:" + id);
+            throw new NotFoundException("Booking not found for id: " + id);
         }
     }
 }
