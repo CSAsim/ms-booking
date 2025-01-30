@@ -3,25 +3,21 @@ package az.edu.turing.service;
 import az.edu.turing.model.FlightDetailsDto;
 import az.edu.turing.model.request.flightDetails.CreateFlightDetailsRequest;
 import az.edu.turing.model.request.flightDetails.UpdateFlightDetailsRequest;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface FlightDetailsService {
 
-    List<FlightDetailsDto> findAll();
+    Page<FlightDetailsDto> findAll(int page, int size, String sortBy);
 
-    Optional<FlightDetailsDto> findByFlightId(Long flightId); // flightId from FlightEntity.
+    FlightDetailsDto findByFlightId(Long flightId); // flightId from FlightEntity.
 
-    Optional<FlightDetailsDto> findByFlightNumber(String flightNumber); // flightNumber from FlightEntity.
+    FlightDetailsDto create(Long userId, CreateFlightDetailsRequest request);
 
-    FlightDetailsDto create(CreateFlightDetailsRequest flightDetailsRequest);
+    FlightDetailsDto update(Long userId, Long id, UpdateFlightDetailsRequest request);
 
-    FlightDetailsDto update(Long id, UpdateFlightDetailsRequest flightDetailsRequest);
+    void delete(Long userId, Long id); // Hard delete.
 
-    void delete(Long id); // Hard delete.
+    void deleteByFlightId(Long userId, Long flightId); // Delete flight details for the flight ID.
 
-    void deleteByFlightId(Long flightId); // Delete flight details for the flight ID.
-
-    boolean existsById(Long id);
 }
