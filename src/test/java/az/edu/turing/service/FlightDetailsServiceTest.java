@@ -48,7 +48,7 @@ class FlightDetailsServiceTest {
         given(flightDetailsRepository.findAll(PAGEABLE)).willReturn(FLIGHT_DETAILS_ENTITY_PAGE);
         given(mapper.toDto(FLIGHT_DETAILS_ENTITY_PAGE)).willReturn(FLIGHT_DETAILS_DTO_PAGE);
 
-        Page<FlightDetailsDto> result = flightDetailsService.findAll(PAGE, SIZE, SORT_BY);
+        Page<FlightDetailsDto> result = flightDetailsService.findAll(PAGEABLE);
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
