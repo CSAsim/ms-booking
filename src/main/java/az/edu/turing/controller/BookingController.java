@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,21 +27,17 @@ public class BookingController {
     @GetMapping
     public ResponseEntity<Page<BookingDto>> getAll(
             @RequestParam(value = "passengerId", required = false) Long passengerId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy) {
+            @PageableDefault(size = 10) Pageable pageable) {
         if (passengerId != null) {
-            return ResponseEntity.ok(bookingService.findAllByPassengerId(passengerId, page, size, sortBy));
+            return ResponseEntity.ok(bookingService.findAllByPassengerId(passengerId, pageable));
         }
-        return ResponseEntity.ok(bookingService.findAll(page, size, sortBy));
+        return ResponseEntity.ok(bookingService.findAll(pageable));
     }
 
     @GetMapping("/{flightId}")
     public ResponseEntity<Page<BookingDto>> getAllByFlightId(@PathVariable("flightId") Long flightId,
-                                                             @RequestParam(defaultValue = "0") int page,
-                                                             @RequestParam(defaultValue = "10") int size,
-                                                             @RequestParam(defaultValue = "id") String sortBy) {
-        return ResponseEntity.ok(bookingService.findAllByFlightId(flightId, page, size, sortBy));
+                                                             @PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(bookingService.findAllByFlightId(flightId, pageable));
     }
 
     @PostMapping
