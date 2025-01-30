@@ -8,6 +8,9 @@ import az.edu.turing.service.FlightService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Validated
 @RestController
@@ -35,17 +37,18 @@ public class FlightController {
     private final FlightService flightService;
 
     @GetMapping
-    public ResponseEntity<List<FlightDto>> getAll(@RequestParam(required = false) String departure,
-                                                   @RequestParam(required = false) String destination,
-                                                   @RequestParam(required = false) LocalDateTime departureTime,
-                                                   @RequestParam(required = false) LocalDateTime arrivalTime) {
-        List<FlightDto> flights = flightService.findAll(departure, destination, departureTime, arrivalTime);
+    public ResponseEntity<Page<FlightDto>> getAll(@RequestParam(required = false) String departure,
+                                                  @RequestParam(required = false) String destination,
+                                                  @RequestParam(required = false) LocalDateTime departureTime,
+                                                  @RequestParam(required = false) LocalDateTime arrivalTime,
+                                                  @PageableDefault(size = 10) Pageable pageable) {
+        Page<FlightDto> flights = flightService.findAll(departure, destination, departureTime, arrivalTime, pageable);
         return ResponseEntity.ok(flights);
     }
 
     @GetMapping("/upcoming")
-    public ResponseEntity<List<FlightDto>> getAllIn24Hours() {
-        List<FlightDto> flights = flightService.findAllIn24Hours();
+    public ResponseEntity<Page<FlightDto>> getAllIn24Hours(@PageableDefault(size = 10) Pageable pageable) {
+        Page<FlightDto> flights = flightService.findAllIn24Hours(pageable);
         return ResponseEntity.ok(flights);
     }
 
@@ -56,9 +59,11 @@ public class FlightController {
     }
 
     @GetMapping("/number/{flightNumber}")
-    public ResponseEntity<List<FlightDto>> getByFlightNumber(@PathVariable String flightNumber) {
-        List<FlightDto> flights = flightService.findByFlightNumber(flightNumber);
-        return ResponseEntity.ok(flights);
+    public ResponseEntity<Page<FlightDto>> getByFlightNumber(@PathVariable String flightNumber,
+                                                             @PageableDefault(size = 10) Pageable pageable) {
+        Page<FlightDto> flights = flightService.findByFlightNumber(flightNumber, pageable);
+        return flights.hasContent() ? ResponseEntity.ok(flights)
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PostMapping
