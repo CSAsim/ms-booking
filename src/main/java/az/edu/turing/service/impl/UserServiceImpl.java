@@ -12,9 +12,9 @@ import az.edu.turing.model.request.user.CreateUserRequest;
 import az.edu.turing.model.request.user.UpdateUserRequest;
 import az.edu.turing.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,18 +25,16 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public List<UserDto> findAll() {
-        return userRepository.findAll().stream()
-                .map(userMapper::toDto)
-                .toList();
+    public Page<UserDto> findAll(Pageable pageable) {
+        return userMapper.toDto(userRepository.findAll(pageable));
     }
 
     @Override
-    public List<UserDto> findAllByFlightId(Long flightId) {
+    public Page<UserDto> findAllByFlightId(Long flightId, Pageable pageable) {
         if(!flightRepository.existsById(flightId)) {
             throw new NotFoundException("Flight not found for id:" + flightId);
         }
-        return userMapper.toDto(userRepository.findAllByFlightId(flightId));
+        return userMapper.toDto(userRepository.findAllByFlightId(flightId, pageable));
     }
 
     @Override
