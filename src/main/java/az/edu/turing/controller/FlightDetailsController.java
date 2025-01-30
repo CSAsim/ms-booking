@@ -7,6 +7,8 @@ import az.edu.turing.service.FlightDetailsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,10 +24,8 @@ public class FlightDetailsController {
 
     @GetMapping
     public ResponseEntity<Page<FlightDetailsDto>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy) {
-        return ResponseEntity.ok(flightDetailsService.findAll(page, size, sortBy));
+            @PageableDefault(size = 10)Pageable pageable) {
+        return ResponseEntity.ok(flightDetailsService.findAll(pageable));
     }
 
     @GetMapping("/{flightId}/details")

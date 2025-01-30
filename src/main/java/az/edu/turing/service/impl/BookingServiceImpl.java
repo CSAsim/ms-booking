@@ -30,26 +30,23 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
 
     @Override
-    public Page<BookingDto> findAll(int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+    public Page<BookingDto> findAll(Pageable pageable) {
         return bookingMapper.toDto(
                 bookingRepository.findAll(pageable)
         );
     }
 
     @Override
-    public Page<BookingDto> findAllByFlightId(Long id, int page, int size, String sortBy) {
+    public Page<BookingDto> findAllByFlightId(Long id, Pageable pageable) {
         existsByFlightId(id);
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
         return bookingMapper.toDto(
                 bookingRepository.findAllByFlightId(id, pageable)
         );
     }
 
     @Override
-    public Page<BookingDto> findAllByPassengerId(Long id, int page, int size, String sortBy) {
+    public Page<BookingDto> findAllByPassengerId(Long id, Pageable pageable) {
         existsByPassengerId(id);
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
         return bookingMapper.toDto(
                 bookingRepository.findAllByPassengerId(id, pageable)
         );

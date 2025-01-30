@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface FlightDetailsService {
 
-    Page<FlightDetailsDto> findAll(int page, int size, String sortBy);
+    Page<FlightDetailsDto> findAll(Pageable pageable);
 
     FlightDetailsDto findByFlightId(Long flightId); // flightId from FlightEntity.
 

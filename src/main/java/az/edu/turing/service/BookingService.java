@@ -5,16 +5,15 @@ import az.edu.turing.model.enums.StatusMessage;
 import az.edu.turing.model.request.booking.CreateBookingRequest;
 import az.edu.turing.model.request.booking.UpdateBookingRequest;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface BookingService {
 
-    Page<BookingDto> findAll(int page, int size, String sortBy);
+    Page<BookingDto> findAll(Pageable pageable);
 
-    Page<BookingDto> findAllByFlightId(Long id, int page, int size, String sortBy);
+    Page<BookingDto> findAllByFlightId(Long id, Pageable pageable);
 
-    Page<BookingDto> findAllByPassengerId(Long id, int page, int size, String sortBy);
+    Page<BookingDto> findAllByPassengerId(Long id, Pageable pageable);
 
     BookingDto createBooking(Long userId, CreateBookingRequest request);
 

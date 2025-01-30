@@ -12,9 +12,7 @@ import az.edu.turing.model.request.flightDetails.UpdateFlightDetailsRequest;
 import az.edu.turing.service.FlightDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,8 +25,7 @@ public class FlightDetailsServiceImpl implements FlightDetailsService {
     private final FlightDetailsMapper mapper;
 
     @Override
-    public Page<FlightDetailsDto> findAll(int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+    public Page<FlightDetailsDto> findAll(Pageable pageable) {
         return mapper.toDto(flightDetailsRepository.findAll(pageable));
     }
 

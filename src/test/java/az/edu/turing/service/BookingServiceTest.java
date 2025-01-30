@@ -50,7 +50,7 @@ class BookingServiceTest {
         given(bookingRepository.findAll(PAGEABLE)).willReturn(BOOKING_ENTITY_PAGE);
         given(bookingMapper.toDto(BOOKING_ENTITY_PAGE)).willReturn(BOOKING_DTO_PAGE);
 
-        Page<BookingDto> result = bookingService.findAll(PAGE, SIZE, SORT_BY);
+        Page<BookingDto> result = bookingService.findAll(PAGEABLE);
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -65,7 +65,7 @@ class BookingServiceTest {
         given(flightRepository.existsById(FLIGHT_ID)).willReturn(true);
         given(bookingMapper.toDto(BOOKING_ENTITY_PAGE)).willReturn(BOOKING_DTO_PAGE);
 
-        Page<BookingDto> result = bookingService.findAllByFlightId(FLIGHT_ID, PAGE, SIZE, SORT_BY);
+        Page<BookingDto> result = bookingService.findAllByFlightId(FLIGHT_ID, PAGEABLE);
 
         assertNotNull(result);
         assertEquals(List.of(BOOKING_DTO), result.getContent());
@@ -79,7 +79,7 @@ class BookingServiceTest {
         given(flightRepository.existsById(FLIGHT_ID)).willReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> bookingService.findAllByFlightId(FLIGHT_ID, PAGE, SIZE, SORT_BY));
+                () -> bookingService.findAllByFlightId(FLIGHT_ID, PAGEABLE));
 
         assertEquals("Flight not found for id: " + FLIGHT_ID, exception.getMessage());
 
@@ -92,7 +92,7 @@ class BookingServiceTest {
         given(userRepository.existsById(PASSENGER_ID)).willReturn(true);
         given(bookingMapper.toDto(BOOKING_ENTITY_PAGE)).willReturn(BOOKING_DTO_PAGE);
 
-        Page<BookingDto> result = bookingService.findAllByPassengerId(PASSENGER_ID, PAGE, SIZE, SORT_BY);
+        Page<BookingDto> result = bookingService.findAllByPassengerId(PASSENGER_ID, PAGEABLE);
 
         assertNotNull(result);
         assertEquals(List.of(BOOKING_DTO), result.getContent());
@@ -106,7 +106,7 @@ class BookingServiceTest {
         given(userRepository.existsById(PASSENGER_ID)).willReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> bookingService.findAllByPassengerId(PASSENGER_ID, PAGE, SIZE, SORT_BY));
+                () -> bookingService.findAllByPassengerId(PASSENGER_ID, PAGEABLE));
 
         assertEquals("Passenger not found for id: " + PASSENGER_ID, exception.getMessage());
 
