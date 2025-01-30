@@ -20,8 +20,6 @@ public class CreateFlightRequest {
     private String destination;
     private LocalDateTime departureTime;
 
-    private LocalDateTime arrivalTime;
-
     @NotBlank
     private String flightNumber;
 
