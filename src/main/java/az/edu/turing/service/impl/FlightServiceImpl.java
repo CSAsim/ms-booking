@@ -55,6 +55,9 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public List<FlightDto> findByFlightNumber(String flightNumber) {
         List<FlightEntity> flight = flightRepository.findByFlightNumber(flightNumber);
+        if (flight.isEmpty()) {
+            throw new NotFoundException("Flight with number " + flightNumber + " not found");
+        }
         return flightMapper.toDtoList(flight);
     }
 
