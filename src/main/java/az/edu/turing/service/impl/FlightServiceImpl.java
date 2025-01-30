@@ -50,12 +50,13 @@ public class FlightServiceImpl implements FlightService {
         return flightMapper.toDto(flightEntity);
     }
 
-    public Page<FlightDto> findByFlightNumber(String flightNumber, Pageable pageable) {
-        Page<FlightEntity> flights = flightRepository.findByFlightNumber(flightNumber, pageable);
-        if (flights.isEmpty()) {
-            throw new NotFoundException("Flight with number " + flightNumber + " not found");
+    @Override
+    public FlightDto findByFlightNumber(String flightNumber) {
+        FlightEntity flight = flightRepository.findByFlightNumber(flightNumber);
+        if (flight == null) {
+            throw new NotFoundException("Flight not found");
         }
-        return flights.map(flightMapper::toDto);
+        return flightMapper.toDto(flight);
     }
 
     @Override

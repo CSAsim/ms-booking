@@ -18,7 +18,7 @@ public interface FlightService {
 
     FlightDto findById(Long id);
 
-    Page<FlightDto> findByFlightNumber(String flightNumber, Pageable pageable);
+    FlightDto findByFlightNumber(String flightNumber);
 
     FlightDto create(Long id, CreateFlightRequest flightRequest);
 

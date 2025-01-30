@@ -59,11 +59,9 @@ public class FlightController {
     }
 
     @GetMapping("/number/{flightNumber}")
-    public ResponseEntity<Page<FlightDto>> getByFlightNumber(@PathVariable String flightNumber,
-                                                             @PageableDefault(size = 10) Pageable pageable) {
-        Page<FlightDto> flights = flightService.findByFlightNumber(flightNumber, pageable);
-        return flights.hasContent() ? ResponseEntity.ok(flights)
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<FlightDto> getByFlightNumber(@PathVariable String flightNumber) {
+        FlightDto flight = flightService.findByFlightNumber(flightNumber);
+        return ResponseEntity.ok(flight);
     }
 
     @PostMapping
