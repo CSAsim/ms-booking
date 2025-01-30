@@ -123,26 +123,23 @@ class FlightServiceTest {
 
     @Test
     void findByFlightNumber_ShouldReturnFlight() {
-        Page<FlightEntity> flightPage = new PageImpl<>(List.of(FLIGHT_ENTITY));
-        when(flightRepository.findByFlightNumber(FLIGHT_NUMBER, PAGEABLE)).thenReturn(flightPage);
-        when(flightMapper.toDto(any(FlightEntity.class))).thenReturn(FLIGHT_DTO);
+        when(flightRepository.findByFlightNumber(FLIGHT_NUMBER)).thenReturn(FLIGHT_ENTITY);
+        when(flightMapper.toDto(FLIGHT_ENTITY)).thenReturn(FLIGHT_DTO);
 
-        Page<FlightDto> result = flightService.findByFlightNumber(FLIGHT_NUMBER, PAGEABLE);
+        FlightDto result = flightService.findByFlightNumber(FLIGHT_NUMBER);
 
-        assertFalse(result.isEmpty());
-        assertEquals(FLIGHT_DTO, result.getContent().getFirst());
-
-        verify(flightRepository, times(1)).findByFlightNumber(FLIGHT_NUMBER, PAGEABLE);
+        assertNotNull(result);
+        assertEquals(FLIGHT_DTO, result);
+        verify(flightRepository, times(1)).findByFlightNumber(FLIGHT_NUMBER);
     }
 
     @Test
     void findByFlightNumber_ShouldThrowExceptionWhenFlightNotFound() {
-        Page<FlightEntity> emptyPage = Page.empty();
-        when(flightRepository.findByFlightNumber(FLIGHT_NUMBER, PAGEABLE)).thenReturn(emptyPage);
+        when(flightRepository.findByFlightNumber(FLIGHT_NUMBER)).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> flightService.findByFlightNumber(FLIGHT_NUMBER, PAGEABLE));
+        assertThrows(NotFoundException.class, () -> flightService.findByFlightNumber(FLIGHT_NUMBER));
 
-        verify(flightRepository, times(1)).findByFlightNumber(FLIGHT_NUMBER, PAGEABLE);
+        verify(flightRepository, times(1)).findByFlightNumber(FLIGHT_NUMBER);
     }
 
     @Test

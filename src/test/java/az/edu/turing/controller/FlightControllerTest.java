@@ -15,10 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static az.edu.turing.common.BookingTestConstants.USER_ID;
-import static az.edu.turing.common.FlightTestConstants.CREATE_FLIGHT_REQUEST;
-import static az.edu.turing.common.FlightTestConstants.FLIGHT_DTO;
-import static az.edu.turing.common.FlightTestConstants.ID;
-import static az.edu.turing.common.FlightTestConstants.UPDATE_FLIGHT_REQUEST;
+import static az.edu.turing.common.FlightTestConstants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -77,6 +74,23 @@ class FlightControllerTest {
         when(flightService.findById(ID)).thenThrow(new NotFoundException("Flight not found"));
 
         mockMvc.perform(get("/api/v1/flights/{id}", ID))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getByFlightNumber_ShouldReturnFlight() throws Exception {
+        when(flightService.findByFlightNumber(FLIGHT_NUMBER)).thenReturn(FLIGHT_DTO);
+
+        mockMvc.perform(get("/api/v1/flights/number/{flightNumber}", FLIGHT_NUMBER))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(FLIGHT_DTO)));
+    }
+
+    @Test
+    void getByFlightNumber_ShouldReturnNotFound() throws Exception {
+        when(flightService.findByFlightNumber(FLIGHT_NUMBER)).thenThrow(new NotFoundException("Flight not found"));
+
+        mockMvc.perform(get("/api/v1/flights/number/{flightNumber}", FLIGHT_NUMBER))
                 .andExpect(status().isNotFound());
     }
 
