@@ -31,37 +31,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserDto> findAllByFlightId(Long flightId, Pageable pageable) {
-        if(!flightRepository.existsById(flightId)) {
-            throw new NotFoundException("Flight not found for id:" + flightId);
-        }
+        checkIfFlightExists(flightId);
         return userMapper.toDto(userRepository.findAllByFlightId(flightId, pageable));
     }
 
     @Override
     public UserDto findById(Long id) {
-        return userRepository.findById(id)
-                .map(userMapper::toDto)
-                .orElseThrow(() -> new NotFoundException("User not found for id: " + id));
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+        return userMapper.toDto(user);
     }
 
     @Override
     public UserDto findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .map(userMapper::toDto)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found for email: " + email));
+        return userMapper.toDto(user);
     }
 
     @Override
     public UserDto create(Long userId, CreateUserRequest request) {
-
-        if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new InvalidInputException("Password do not match");
-        }
-
-        existsByHeaderId(userId);
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new AlreadyExistsException("User with email " + request.getEmail() + " already exists.");
-        }
+        validatePasswords(request);
+        checkIfUserExistsByEmail(request.getEmail());
 
         UserEntity user = userMapper.toEntity(request);
         user.setDeleted(false);
@@ -70,28 +61,20 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(userRepository.save(user));
     }
 
-
     @Override
     public UserDto update(Long userId, Long id, UpdateUserRequest userRequest) {
-
-        existsByHeaderId(userId);
+        checkIfUserExistsById(userId);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
-        if (userRequest.getName() != null) user.setName(userRequest.getName());
-        if (userRequest.getSurname() != null) user.setSurname(userRequest.getSurname());
-        if (userRequest.getEmail() != null) user.setEmail(userRequest.getEmail());
-        if (userRequest.getPhoneNumber() != null) user.setPhoneNumber(userRequest.getPhoneNumber());
-        if (userRequest.getPassword() != null) user.setPassword(userRequest.getPassword());
-        if (userRequest.getUserRole() != null) user.setUserRole(userRequest.getUserRole());
-
+        updateUserFields(userRequest, user);
         user.setUpdatedBy(userId);
         return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
     public void delete(Long userId, Long id) {
-        existsByHeaderId(userId);
+        checkIfUserExistsById(userId);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
@@ -101,21 +84,36 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    private void existsByHeaderId(Long userId) {
+    private void checkIfUserExistsById(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("User not found for header id: " + userId);
         }
     }
 
-    private void existsById(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new NotFoundException("User not found for id: " + id);
+    private void checkIfUserExistsByEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new AlreadyExistsException("User with email " + email + " already exists.");
         }
     }
 
-    private void existsByEmail(String email) {
-        if (!userRepository.existsByEmail(email)) {
-            throw new NotFoundException("User not found for email: " + email);
+    private void checkIfFlightExists(Long flightId) {
+        if (!flightRepository.existsById(flightId)) {
+            throw new NotFoundException("Flight not found for id:" + flightId);
         }
+    }
+
+    private void validatePasswords(CreateUserRequest request) {
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new InvalidInputException("Password and confirm password do not match.");
+        }
+    }
+
+    private void updateUserFields(UpdateUserRequest userRequest, UserEntity user) {
+        if (userRequest.getName() != null) user.setName(userRequest.getName());
+        if (userRequest.getSurname() != null) user.setSurname(userRequest.getSurname());
+        if (userRequest.getEmail() != null) user.setEmail(userRequest.getEmail());
+        if (userRequest.getPhoneNumber() != null) user.setPhoneNumber(userRequest.getPhoneNumber());
+        if (userRequest.getPassword() != null) user.setPassword(userRequest.getPassword());
+        if (userRequest.getUserRole() != null) user.setUserRole(userRequest.getUserRole());
     }
 }
