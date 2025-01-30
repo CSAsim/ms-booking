@@ -16,15 +16,32 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static az.edu.turing.common.FlightTestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static az.edu.turing.common.FlightTestConstants.CREATE_FLIGHT_REQUEST;
+import static az.edu.turing.common.FlightTestConstants.DEPARTURE;
+import static az.edu.turing.common.FlightTestConstants.DESTINATION;
+import static az.edu.turing.common.FlightTestConstants.FLIGHT_DTO;
+import static az.edu.turing.common.FlightTestConstants.FLIGHT_ENTITY;
+import static az.edu.turing.common.FlightTestConstants.FLIGHT_NUMBER;
+import static az.edu.turing.common.FlightTestConstants.ID;
+import static az.edu.turing.common.FlightTestConstants.PAGEABLE;
+import static az.edu.turing.common.FlightTestConstants.UPDATE_FLIGHT_REQUEST;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FlightServiceTest {
@@ -40,46 +57,47 @@ class FlightServiceTest {
 
     @Test
     void findAll_ShouldReturnAllFlights() {
-        when(flightRepository.findAll(any(Specification.class))).thenReturn(
-                (List<FlightEntity>) List.of(FLIGHT_ENTITY));
-        when(flightMapper.toDtoList(List.of(FLIGHT_ENTITY))).thenReturn(List.of(FLIGHT_DTO));
+        Page<FlightEntity> flightPage = new PageImpl<>(List.of(FLIGHT_ENTITY));
+        when(flightRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(flightPage);
+        when(flightMapper.toDto(any(FlightEntity.class))).thenReturn(FLIGHT_DTO);
 
-        List<FlightDto> result = flightService.findAll(DEPARTURE, DESTINATION, null,
-                null);
+        Page<FlightDto> result = flightService.findAll(DEPARTURE, DESTINATION, null, null,
+                PAGEABLE);
 
         assertFalse(result.isEmpty());
-        assertEquals(FLIGHT_DTO, result.getFirst());
+        assertEquals(FLIGHT_DTO, result.getContent().get(0));
 
-        verify(flightRepository, times(1)).findAll(any(Specification.class));
-        verify(flightMapper, times(1)).toDtoList(List.of(FLIGHT_ENTITY));
+        verify(flightRepository, times(1)).findAll(any(Specification.class), any(Pageable.class));
     }
 
     @Test
     void findAll_ShouldReturnEmptyList() {
-        when(flightRepository.findAll(any(Specification.class))).thenReturn(Collections.emptyList());
-        when(flightMapper.toDtoList(Collections.emptyList())).thenReturn(Collections.emptyList());
+        Page<FlightEntity> emptyPage = Page.empty();
+        when(flightRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(emptyPage);
 
-        List<FlightDto> result = flightService.findAll(DEPARTURE, DESTINATION, null, null);
+        Page<FlightDto> result = flightService.findAll(DEPARTURE, DESTINATION, null, null,
+                PAGEABLE);
 
         assertTrue(result.isEmpty());
-        verify(flightRepository, times(1)).findAll(any(Specification.class));
-        verify(flightMapper, times(1)).toDtoList(Collections.emptyList());
+        verify(flightRepository, times(1)).findAll(any(Specification.class),
+                any(Pageable.class));
     }
 
     @Test
     void findAllIn24Hours_ShouldReturnFlights() {
-        when(flightRepository.findAll(any(Specification.class))).thenReturn(
-                (List<FlightEntity>) List.of(FLIGHT_ENTITY));
-        when(flightMapper.toDtoList(List.of(FLIGHT_ENTITY))).thenReturn(List.of(FLIGHT_DTO));
+        Page<FlightEntity> flightPage = new PageImpl<>(List.of(FLIGHT_ENTITY));
+        when(flightRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(flightPage);
+        when(flightMapper.toDto(any(FlightEntity.class))).thenReturn(FLIGHT_DTO);
 
-        List<FlightDto> result = flightService.findAllIn24Hours();
+        Page<FlightDto> result = flightService.findAllIn24Hours(PAGEABLE);
 
         assertFalse(result.isEmpty());
-        assertEquals(FLIGHT_DTO, result.getFirst());
+        assertEquals(FLIGHT_DTO, result.getContent().getFirst());
 
-        verify(flightRepository, times(1)).findAll(any(Specification.class));
-        verify(flightMapper, times(1)).toDtoList(List.of(FLIGHT_ENTITY));
+        verify(flightRepository, times(1)).findAll(any(Specification.class),
+                any(Pageable.class));
     }
+
 
     @Test
     void findById_ShouldReturnFlight() {
@@ -102,24 +120,29 @@ class FlightServiceTest {
         verify(flightRepository, times(1)).findById(ID);
     }
 
+
     @Test
     void findByFlightNumber_ShouldReturnFlight() {
-        when(flightRepository.findByFlightNumber(FLIGHT_NUMBER)).thenReturn(List.of(FLIGHT_ENTITY));
-        when(flightMapper.toDtoList(List.of(FLIGHT_ENTITY))).thenReturn(List.of(FLIGHT_DTO));
+        Page<FlightEntity> flightPage = new PageImpl<>(List.of(FLIGHT_ENTITY));
+        when(flightRepository.findByFlightNumber(FLIGHT_NUMBER, PAGEABLE)).thenReturn(flightPage);
+        when(flightMapper.toDto(any(FlightEntity.class))).thenReturn(FLIGHT_DTO);
 
-        List<FlightDto> result = flightService.findByFlightNumber(FLIGHT_NUMBER);
+        Page<FlightDto> result = flightService.findByFlightNumber(FLIGHT_NUMBER, PAGEABLE);
 
         assertFalse(result.isEmpty());
-        assertEquals(FLIGHT_DTO, result.getFirst());
-        verify(flightRepository, times(1)).findByFlightNumber(FLIGHT_NUMBER);
+        assertEquals(FLIGHT_DTO, result.getContent().getFirst());
+
+        verify(flightRepository, times(1)).findByFlightNumber(FLIGHT_NUMBER, PAGEABLE);
     }
 
     @Test
     void findByFlightNumber_ShouldThrowExceptionWhenFlightNotFound() {
-        when(flightRepository.findByFlightNumber(FLIGHT_NUMBER)).thenReturn(List.of());
+        Page<FlightEntity> emptyPage = Page.empty();
+        when(flightRepository.findByFlightNumber(FLIGHT_NUMBER, PAGEABLE)).thenReturn(emptyPage);
 
-        assertThrows(NotFoundException.class, () -> flightService.findByFlightNumber(FLIGHT_NUMBER));
-        verify(flightRepository, times(1)).findByFlightNumber(FLIGHT_NUMBER);
+        assertThrows(NotFoundException.class, () -> flightService.findByFlightNumber(FLIGHT_NUMBER, PAGEABLE));
+
+        verify(flightRepository, times(1)).findByFlightNumber(FLIGHT_NUMBER, PAGEABLE);
     }
 
     @Test

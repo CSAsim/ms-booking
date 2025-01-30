@@ -13,11 +13,12 @@ import az.edu.turing.model.request.flight.CreateFlightRequest;
 import az.edu.turing.model.request.flight.UpdateFlightRequest;
 import az.edu.turing.service.FlightService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,23 +28,20 @@ public class FlightServiceImpl implements FlightService {
     private final FlightMapper flightMapper;
     private final FlightRepository flightRepository;
 
-    @Override
-    public List<FlightDto> findAll(String departure, String destination, LocalDateTime departureTime,
-                                   LocalDateTime arrivalTime) {
-        Specification<FlightEntity> spec = FlightSpecification.byFilters(departure, destination, departureTime,
-                arrivalTime);
-        List<FlightEntity> flights = flightRepository.findAll(spec);
-        return flightMapper.toDtoList(flights);
+    public Page<FlightDto> findAll(String departure, String destination, LocalDateTime departureTime,
+                                   LocalDateTime arrivalTime, Pageable pageable) {
+        Specification<FlightEntity> spec = FlightSpecification.byFilters(departure, destination, departureTime, arrivalTime);
+        Page<FlightEntity> flights = flightRepository.findAll(spec, pageable);
+        return flights.map(flightMapper::toDto);
     }
 
     @Override
-    public List<FlightDto> findAllIn24Hours() {
+    public Page<FlightDto> findAllIn24Hours(Pageable pageable) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime twentyFourHoursLater = now.plusHours(24);
-        Specification<FlightEntity> spec = FlightSpecification.byFilters(null, null, now,
-                twentyFourHoursLater);
-        List<FlightEntity> flights = flightRepository.findAll(spec);
-        return flightMapper.toDtoList(flights);
+        Specification<FlightEntity> spec = FlightSpecification.byFilters(null, null, now, twentyFourHoursLater);
+        Page<FlightEntity> flights = flightRepository.findAll(spec, pageable);
+        return flights.map(flightMapper::toDto);
     }
 
     @Override
@@ -52,13 +50,12 @@ public class FlightServiceImpl implements FlightService {
         return flightMapper.toDto(flightEntity);
     }
 
-    @Override
-    public List<FlightDto> findByFlightNumber(String flightNumber) {
-        List<FlightEntity> flight = flightRepository.findByFlightNumber(flightNumber);
-        if (flight.isEmpty()) {
+    public Page<FlightDto> findByFlightNumber(String flightNumber, Pageable pageable) {
+        Page<FlightEntity> flights = flightRepository.findByFlightNumber(flightNumber, pageable);
+        if (flights.isEmpty()) {
             throw new NotFoundException("Flight with number " + flightNumber + " not found");
         }
-        return flightMapper.toDtoList(flight);
+        return flights.map(flightMapper::toDto);
     }
 
     @Override
