@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  postgres:
+  db_booking:
     container_name: ms_booking_db
     image: postgres:latest
     environment:
@@ -11,7 +11,13 @@ services:
     ports:
       - "5495:5432"
 
-  app:
-    build: .
+  ms-booking:
+    container_name: turing_ms_booking
+    image: ms-booking:1.0
+    ports:
+      - "8088:8081"
+    restart: unless-stopped
+    build:
+      dockerfile: Dockerfile
     depends_on:
-      - postgres
+      - db_booking

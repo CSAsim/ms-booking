@@ -41,7 +41,6 @@ public class FlightController {
     private final FlightService flightService;
     private final FlightDetailsService flightDetailsService;
 
-    // Flight endpoints
 
     @GetMapping
     public ResponseEntity<Page<FlightDto>> getAll(
@@ -51,6 +50,12 @@ public class FlightController {
             @RequestParam(required = false) LocalDateTime arrivalTime,
             @PageableDefault(size = 10) Pageable pageable) {
         Page<FlightDto> flights = flightService.findAll(departure, destination, departureTime, arrivalTime, pageable);
+        return ResponseEntity.ok(flights);
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<Page<FlightDto>> getAllIn24Hours(@PageableDefault(size = 10) Pageable pageable) {
+        Page<FlightDto> flights = flightService.findAllIn24Hours(pageable);
         return ResponseEntity.ok(flights);
     }
 
