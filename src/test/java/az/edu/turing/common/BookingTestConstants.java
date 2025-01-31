@@ -24,6 +24,7 @@ public interface BookingTestConstants {
     Integer SEAT_NUMBER = 23;
     Double TOTAL_AMOUNT = 234.0;
     String NAME = "test_name";
+    String BASE_URL = "/api/v1/bookings";
 
     Pageable PAGEABLE = PageRequest.of(PAGE, SIZE, Sort.by(SORT_BY));
 
@@ -57,6 +58,7 @@ public interface BookingTestConstants {
     CreateBookingRequest CREATE_BOOKING_REQUEST = CreateBookingRequest.builder()
             .flightId(FLIGHT_ID)
             .passengerId(PASSENGER_ID)
+            .seatNumber(SEAT_NUMBER)
             .totalAmount(TOTAL_AMOUNT)
             .build();
 

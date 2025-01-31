@@ -57,7 +57,7 @@ public class BookingController {
     @PatchMapping("/{bookingId}")
     public ResponseEntity<BookingDto> updateStatus(@RequestHeader Long userId,
                                                    @PathVariable("bookingId") Long bookingId,
-                                                   @RequestBody @NotNull StatusMessage statusMessage) {
+                                                   @RequestParam @NotNull StatusMessage statusMessage) {
         return ResponseEntity.ok(bookingService.updateBookingStatus(userId, bookingId, statusMessage));
     }
 
