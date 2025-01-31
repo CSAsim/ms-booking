@@ -5,7 +5,11 @@ import az.edu.turing.model.UserDto;
 import az.edu.turing.model.enums.UserRole;
 import az.edu.turing.model.request.user.CreateUserRequest;
 import az.edu.turing.model.request.user.UpdateUserRequest;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
 

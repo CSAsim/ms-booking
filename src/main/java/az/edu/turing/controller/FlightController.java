@@ -76,13 +76,6 @@ public class FlightController {
         FlightDto updatedFlight = flightService.update(userId, id, updateFlightRequest);
         return ResponseEntity.ok(updatedFlight);
     }
-//
-//    @PatchMapping("/{id}/number")
-//    public ResponseEntity<FlightDto> updateFlightNumber(@RequestHeader Long userId, @PathVariable Long id,
-//                                                        @RequestParam String flightNumber) {
-//        FlightDto updatedFlight = flightService.updateFlightNumber(userId, id, flightNumber);
-//        return ResponseEntity.ok(updatedFlight);
-//    }
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<FlightDto> updateFlightStatus(@RequestHeader Long userId, @PathVariable Long id,

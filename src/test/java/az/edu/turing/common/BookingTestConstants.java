@@ -8,7 +8,11 @@ import az.edu.turing.model.enums.StatusMessage;
 import az.edu.turing.model.enums.UserRole;
 import az.edu.turing.model.request.booking.CreateBookingRequest;
 import az.edu.turing.model.request.booking.UpdateBookingRequest;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
 
