@@ -14,9 +14,7 @@ public interface FlightDetailsService {
 
     FlightDetailsDto create(Long userId, CreateFlightDetailsRequest request);
 
-    FlightDetailsDto update(Long userId, Long id, UpdateFlightDetailsRequest request);
-
-    void delete(Long userId, Long id); // Hard delete.
+    FlightDetailsDto updateByFlightId(Long userId, Long id, UpdateFlightDetailsRequest request);
 
     void deleteByFlightId(Long userId, Long flightId); // Delete flight details for the flight ID.
 

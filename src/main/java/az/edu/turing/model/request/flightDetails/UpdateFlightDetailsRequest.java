@@ -21,4 +21,6 @@ public class UpdateFlightDetailsRequest {
     @NotBlank
     private Integer capacity;
 
+    private Long flightId;
+
 }

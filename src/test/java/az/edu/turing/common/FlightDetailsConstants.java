@@ -62,6 +62,7 @@ public interface FlightDetailsConstants {
             .build();
 
     UpdateFlightDetailsRequest UPDATE_FLIGHT_DETAILS_REQUEST = UpdateFlightDetailsRequest.builder()
+            .flightId(FLIGHT_ID)
             .airlineName(AIRLINE_NAME)
             .planeModel(PLANE_MODEL)
             .capacity(CAPACITY)

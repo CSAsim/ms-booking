@@ -46,19 +46,13 @@ public class FlightDetailsServiceImpl implements FlightDetailsService {
     }
 
     @Override
-    public FlightDetailsDto update(Long userId, Long id, UpdateFlightDetailsRequest request) {
+    public FlightDetailsDto updateByFlightId(Long userId, Long id, UpdateFlightDetailsRequest request) {
         validateUserExists(userId);
+        validateFlightExists(request.getFlightId());
         validateFlightDetailsExists(id);
         FlightDetailsEntity entity = mapper.toEntity(request);
         entity.setUpdatedBy(userId);
         return mapper.toDto(flightDetailsRepository.save(entity));
-    }
-
-    @Override
-    public void delete(Long userId, Long id) {
-        validateUserExists(userId);
-        validateFlightDetailsExists(id);
-        flightDetailsRepository.deleteById(id);
     }
 
     @Override

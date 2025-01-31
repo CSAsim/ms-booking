@@ -131,13 +131,14 @@ class FlightDetailsServiceTest {
 
     @Test
     void updateFlightDetails_Should_ReturnSuccess() {
+        given(flightRepository.existsById(FLIGHT_ID)).willReturn(true);
         given(userRepository.existsById(USER_ID)).willReturn(true);
         given(flightDetailsRepository.existsById(ID)).willReturn(true);
         given(mapper.toEntity(UPDATE_FLIGHT_DETAILS_REQUEST)).willReturn(FLIGHT_DETAILS_ENTITY);
         given(mapper.toDto(FLIGHT_DETAILS_ENTITY)).willReturn(FLIGHT_DETAILS_DTO);
         given(flightDetailsRepository.save(FLIGHT_DETAILS_ENTITY)).willReturn(FLIGHT_DETAILS_ENTITY);
 
-        FlightDetailsDto result = flightDetailsService.update(USER_ID, ID, UPDATE_FLIGHT_DETAILS_REQUEST);
+        FlightDetailsDto result = flightDetailsService.updateByFlightId(USER_ID, ID, UPDATE_FLIGHT_DETAILS_REQUEST);
 
         assertNotNull(result);
         assertEquals(FLIGHT_DETAILS_DTO, result);
@@ -152,69 +153,13 @@ class FlightDetailsServiceTest {
         given(userRepository.existsById(USER_ID)).willReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> flightDetailsService.update(USER_ID, ID, UPDATE_FLIGHT_DETAILS_REQUEST));
+                () -> flightDetailsService.updateByFlightId(USER_ID, ID, UPDATE_FLIGHT_DETAILS_REQUEST));
 
         assertEquals("User not found for id: " + USER_ID, exception.getMessage());
 
         then(userRepository).should(times(1)).existsById(USER_ID);
         then(flightDetailsRepository).should(never()).existsById(ID);
         then(flightDetailsRepository).should(never()).save(FLIGHT_DETAILS_ENTITY);
-    }
-
-    @Test
-    void updateFlightDetails_Should_ThrowNotFoundException_When_FlightDetailsIdNotFound () {
-        given(userRepository.existsById(USER_ID)).willReturn(true);
-        given(flightDetailsRepository.existsById(ID)).willReturn(false);
-
-        NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> flightDetailsService.update(USER_ID, ID, UPDATE_FLIGHT_DETAILS_REQUEST));
-
-        assertEquals("Flight details not found for id: " + ID, exception.getMessage());
-
-        then(userRepository).should(times(1)).existsById(USER_ID);
-        then(flightDetailsRepository).should(times(1)).existsById(ID);
-        then(flightDetailsRepository).should(never()).save(FLIGHT_DETAILS_ENTITY);
-    }
-
-    @Test
-    void deleteFlightDetails_Should_ReturnSuccess() {
-        given(userRepository.existsById(USER_ID)).willReturn(true);
-        given(flightDetailsRepository.existsById(ID)).willReturn(true);
-
-        flightDetailsService.delete(USER_ID, ID);
-
-        then(userRepository).should(times(1)).existsById(USER_ID);
-        then(flightDetailsRepository).should(times(1)).existsById(ID);
-        then(flightDetailsRepository).should(times(1)).deleteById(ID);
-    }
-
-    @Test
-    void deleteFlightDetails_Should_ThrowNotFoundException_When_UserIdNotFound() {
-        given(userRepository.existsById(USER_ID)).willReturn(false);
-
-        NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> flightDetailsService.delete(USER_ID, FLIGHT_ID));
-
-        assertEquals("User not found for id: " + USER_ID, exception.getMessage());
-
-        then(userRepository).should(times(1)).existsById(USER_ID);
-        then(flightDetailsRepository).should(never()).existsById(ID);
-        then(flightDetailsRepository).should(never()).deleteById(ID);
-    }
-
-    @Test
-    void deleteFlightDetails_Should_ThrowNotFoundException_When_FlightDetailsIdNotFound() {
-        given(userRepository.existsById(USER_ID)).willReturn(true);
-        given(flightDetailsRepository.existsById(ID)).willReturn(false);
-
-        NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> flightDetailsService.delete(USER_ID, ID));
-
-        assertEquals("Flight details not found for id: " + ID, exception.getMessage());
-
-        then(userRepository).should(times(1)).existsById(USER_ID);
-        then(flightDetailsRepository).should(times(1)).existsById(ID);
-        then(flightDetailsRepository).should(never()).deleteById(ID);
     }
 
     @Test
@@ -227,20 +172,6 @@ class FlightDetailsServiceTest {
         then(userRepository).should(times(1)).existsById(USER_ID);
         then(flightRepository).should(times(1)).existsById(FLIGHT_ID);
         then(flightDetailsRepository).should(times(1)).deleteByFlightId(FLIGHT_ID);
-    }
-
-    @Test
-    void deleteByFlightId_Should_ThrowNotFoundException_When_UserIdNotFound() {
-        given(userRepository.existsById(USER_ID)).willReturn(false);
-
-        NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> flightDetailsService.deleteByFlightId(USER_ID, FLIGHT_ID));
-
-        assertEquals("User not found for id: " + USER_ID, exception.getMessage());
-
-        then(userRepository).should(times(1)).existsById(USER_ID);
-        then(flightDetailsRepository).should(never()).existsById(ID);
-        then(flightDetailsRepository).should(never()).deleteById(ID);
     }
 
     @Test

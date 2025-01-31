@@ -25,5 +25,6 @@ public interface FlightDetailsMapper {
     @Mapping(source = "flightId", target = "flight.id")
     FlightDetailsEntity toEntity(CreateFlightDetailsRequest request);
 
+    @Mapping(source = "flightId", target = "flight.id")
     FlightDetailsEntity toEntity(UpdateFlightDetailsRequest request);
 }
