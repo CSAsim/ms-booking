@@ -2,6 +2,7 @@ package az.edu.turing.service;
 
 import az.edu.turing.domain.entity.FlightEntity;
 import az.edu.turing.domain.repository.FlightRepository;
+import az.edu.turing.domain.repository.UserRepository;
 import az.edu.turing.exception.AlreadyExistsException;
 import az.edu.turing.exception.InvalidInputException;
 import az.edu.turing.exception.NotFoundException;
@@ -24,20 +25,14 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 import java.util.Optional;
 
-import static az.edu.turing.common.FlightTestConstants.CREATE_FLIGHT_REQUEST;
-import static az.edu.turing.common.FlightTestConstants.DEPARTURE;
-import static az.edu.turing.common.FlightTestConstants.DESTINATION;
-import static az.edu.turing.common.FlightTestConstants.FLIGHT_DTO;
-import static az.edu.turing.common.FlightTestConstants.FLIGHT_ENTITY;
-import static az.edu.turing.common.FlightTestConstants.FLIGHT_NUMBER;
-import static az.edu.turing.common.FlightTestConstants.ID;
-import static az.edu.turing.common.FlightTestConstants.PAGEABLE;
-import static az.edu.turing.common.FlightTestConstants.UPDATE_FLIGHT_REQUEST;
+import static az.edu.turing.common.BookingTestConstants.USER_ID;
+import static az.edu.turing.common.FlightTestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -51,6 +46,9 @@ class FlightServiceTest {
 
     @Mock
     private FlightRepository flightRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private FlightServiceImpl flightService;
@@ -144,6 +142,7 @@ class FlightServiceTest {
 
     @Test
     void createFlight_ShouldCreateFlight() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         when(flightRepository.existsByFlightNumber(FLIGHT_NUMBER)).thenReturn(false);
         when(flightMapper.toEntity(CREATE_FLIGHT_REQUEST)).thenReturn(FLIGHT_ENTITY);
         when(flightRepository.save(FLIGHT_ENTITY)).thenReturn(FLIGHT_ENTITY);
@@ -159,6 +158,7 @@ class FlightServiceTest {
 
     @Test
     void createFlight_ShouldThrowExceptionWhenFlightAlreadyExists() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         when(flightRepository.existsByFlightNumber(FLIGHT_NUMBER)).thenReturn(true);
 
         assertThrows(AlreadyExistsException.class, () -> flightService.create(ID, CREATE_FLIGHT_REQUEST));
@@ -168,6 +168,7 @@ class FlightServiceTest {
 
     @Test
     void updateFlight_ShouldUpdateFlight() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         when(flightRepository.findById(ID)).thenReturn(Optional.of(FLIGHT_ENTITY));
         when(flightRepository.save(FLIGHT_ENTITY)).thenReturn(FLIGHT_ENTITY);
         when(flightMapper.toDto(FLIGHT_ENTITY)).thenReturn(FLIGHT_DTO);
@@ -182,6 +183,7 @@ class FlightServiceTest {
 
     @Test
     void updateFlight_ShouldThrowsExceptionWhenFlightNotFound() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         when(flightRepository.findById(ID)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> flightService.update(1L, ID, UPDATE_FLIGHT_REQUEST));
@@ -200,6 +202,7 @@ class FlightServiceTest {
 
     @Test
     void updateFlightNumber_ShouldUpdateFlightNumber() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         when(flightRepository.findById(ID)).thenReturn(Optional.of(FLIGHT_ENTITY));
         when(flightRepository.save(FLIGHT_ENTITY)).thenReturn(FLIGHT_ENTITY);
         when(flightMapper.toDto(FLIGHT_ENTITY)).thenReturn(FLIGHT_DTO);
@@ -215,6 +218,7 @@ class FlightServiceTest {
 
     @Test
     void updateFlightNumber_ShouldThrowExceptionWhenFlightNotFound() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         when(flightRepository.findById(ID)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> flightService.updateFlightNumber(1L, ID,
@@ -225,6 +229,7 @@ class FlightServiceTest {
 
     @Test
     void updateFlightStatus_ShouldUpdateFlightStatus() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         when(flightRepository.findById(ID)).thenReturn(Optional.of(FLIGHT_ENTITY));
         when(flightRepository.save(FLIGHT_ENTITY)).thenReturn(FLIGHT_ENTITY);
         when(flightMapper.toDto(FLIGHT_ENTITY)).thenReturn(FLIGHT_DTO);
@@ -240,6 +245,7 @@ class FlightServiceTest {
 
     @Test
     void updateFlightStatus_ShouldThrowExceptionWhenFlightNotFound() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         when(flightRepository.findById(ID)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> flightService.updateFlightStatus(1L, ID,
@@ -250,19 +256,21 @@ class FlightServiceTest {
 
     @Test
     void deleteFlight_ShouldDeleteFlight() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         when(flightRepository.findById(ID)).thenReturn(Optional.of(FLIGHT_ENTITY));
         when(flightRepository.save(FLIGHT_ENTITY)).thenReturn(FLIGHT_ENTITY);
 
-        flightService.delete(ID);
+        flightService.delete(USER_ID, ID);
 
         verify(flightRepository, times(1)).findById(ID);
     }
 
     @Test
     void deleteFlight_ShouldThrowExceptionWhenFlightNotFound() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         when(flightRepository.findById(ID)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> flightService.delete(ID));
+        assertThrows(NotFoundException.class, () -> flightService.delete(USER_ID, ID));
 
         verify(flightRepository, times(1)).findById(ID);
     }

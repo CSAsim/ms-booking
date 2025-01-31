@@ -25,25 +25,29 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public Page<UserDto> findAll(Pageable pageable) {
+    public Page<UserDto> findAll(Long userId, Pageable pageable) {
+        checkUserRole(userId);
         return userMapper.toDto(userRepository.findAll(pageable));
     }
 
     @Override
-    public Page<UserDto> findAllByFlightId(Long flightId, Pageable pageable) {
+    public Page<UserDto> findAllByFlightId(Long userId, Long flightId, Pageable pageable) {
+        checkUserRole(userId);
         checkIfFlightExists(flightId);
         return userMapper.toDto(userRepository.findAllByFlightId(flightId, pageable));
     }
 
     @Override
-    public UserDto findById(Long id) {
+    public UserDto findById(Long userId, Long id) {
+        checkUserRole(userId);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
         return userMapper.toDto(user);
     }
 
     @Override
-    public UserDto findByEmail(String email) {
+    public UserDto findByEmail(Long userId, String email) {
+        checkUserRole(userId);
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found for email: " + email));
         return userMapper.toDto(user);
@@ -82,6 +86,12 @@ public class UserServiceImpl implements UserService {
         user.setDeleted(true);
         user.setUpdatedBy(userId);
         userRepository.save(user);
+    }
+
+    private void checkUserRole(Long userId) {
+        if(!userRepository.isAdmin(userId)) {
+            throw new InvalidInputException("You can not get all users infos");
+        }
     }
 
     private void checkIfUserExistsById(Long userId) {

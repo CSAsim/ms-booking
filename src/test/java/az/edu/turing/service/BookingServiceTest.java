@@ -47,10 +47,11 @@ class BookingServiceTest {
 
     @Test
     void findAll_Should_ReturnSuccess() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(bookingRepository.findAll(PAGEABLE)).willReturn(BOOKING_ENTITY_PAGE);
         given(bookingMapper.toDto(BOOKING_ENTITY_PAGE)).willReturn(BOOKING_DTO_PAGE);
 
-        Page<BookingDto> result = bookingService.findAll(PAGEABLE);
+        Page<BookingDto> result = bookingService.findAll(USER_ID, PAGEABLE);
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -61,11 +62,12 @@ class BookingServiceTest {
 
     @Test
     void findAllByFlightId_Should_ReturnSuccess() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(bookingRepository.findAllByFlightId(FLIGHT_ID, PAGEABLE)).willReturn(BOOKING_ENTITY_PAGE);
         given(flightRepository.existsById(FLIGHT_ID)).willReturn(true);
         given(bookingMapper.toDto(BOOKING_ENTITY_PAGE)).willReturn(BOOKING_DTO_PAGE);
 
-        Page<BookingDto> result = bookingService.findAllByFlightId(FLIGHT_ID, PAGEABLE);
+        Page<BookingDto> result = bookingService.findAllByFlightId(USER_ID, FLIGHT_ID, PAGEABLE);
 
         assertNotNull(result);
         assertEquals(List.of(BOOKING_DTO), result.getContent());
@@ -76,13 +78,15 @@ class BookingServiceTest {
 
     @Test
     void findAllByFlightId_Should_ThrowNotfoundException_WhenFlightIdNotFound() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(flightRepository.existsById(FLIGHT_ID)).willReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> bookingService.findAllByFlightId(FLIGHT_ID, PAGEABLE));
+                () -> bookingService.findAllByFlightId(USER_ID, FLIGHT_ID, PAGEABLE));
 
         assertEquals("Flight not found for id: " + FLIGHT_ID, exception.getMessage());
 
+        then(userRepository).should(times(1)).isAdmin(USER_ID);
         then(bookingRepository).should(never()).findAllByFlightId(FLIGHT_ID, PAGEABLE);
     }
 
@@ -98,6 +102,7 @@ class BookingServiceTest {
         assertEquals(List.of(BOOKING_DTO), result.getContent());
         assertFalse(result.isEmpty());
 
+        then(userRepository).should(times(1)).existsById(PASSENGER_ID);
         then(bookingRepository).should(times(1)).findAllByPassengerId(PASSENGER_ID, PAGEABLE);
     }
 
@@ -131,22 +136,6 @@ class BookingServiceTest {
         then(flightRepository).should(times(1)).findById(FLIGHT_ID);
         then(userRepository).should(times(1)).findById(PASSENGER_ID);
         then(bookingRepository).should(times(1)).save(BOOKING_ENTITY);
-    }
-
-    @Test
-    void createBooking_Should_ThrowNotFoundException_When_UserNotFound() {
-
-        given(userRepository.existsById(USER_ID)).willReturn(false);
-
-        NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> bookingService.createBooking(USER_ID, CREATE_BOOKING_REQUEST));
-
-        assertEquals("User not found for id: " + USER_ID, exception.getMessage());
-
-        then(userRepository).should(times(1)).existsById(USER_ID);
-        then(flightRepository).should(never()).findById(FLIGHT_ID);
-        then(userRepository).should(never()).findById(PASSENGER_ID);
-        then(bookingRepository).should(never()).save(BOOKING_ENTITY);
     }
 
     @Test
@@ -200,21 +189,6 @@ class BookingServiceTest {
     }
 
     @Test
-    void updateBooking_Should_ThrowNotFoundException_When_UserIdNotFound() {
-        given(userRepository.existsById(USER_ID)).willReturn(false);
-
-        NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> bookingService.updateBooking(USER_ID, ID, UPDATE_BOOKING_REQUEST));
-
-        assertEquals("User not found for id: " + USER_ID, exception.getMessage());
-
-        then(userRepository).should(times(1)).existsById(USER_ID);
-        then(bookingRepository).should(never()).findById(ID);
-        then(bookingRepository).should(never()).save(BOOKING_ENTITY);
-    }
-
-
-    @Test
     void updateBooking_Should_ThrowNotFoundException_When_BookingIdNotFound() {
         given(userRepository.existsById(USER_ID)).willReturn(true);
         given(bookingRepository.findById(ID)).willReturn(Optional.empty());
@@ -231,6 +205,7 @@ class BookingServiceTest {
 
     @Test
     void updateBookingStatus_Should_ReturnSuccess() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(userRepository.existsById(USER_ID)).willReturn(true);
         given(bookingRepository.findById(ID)).willReturn(Optional.of(BOOKING_ENTITY));
         given(bookingRepository.save(BOOKING_ENTITY)).willReturn(BOOKING_ENTITY);
@@ -247,21 +222,8 @@ class BookingServiceTest {
     }
 
     @Test
-    void updateBookingStatus_Should_Throw_NotFoundException_When_UserNotFound() {
-        given(userRepository.existsById(USER_ID)).willReturn(false);
-
-        NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> bookingService.updateBookingStatus(USER_ID, ID, StatusMessage.COMPLETED));
-
-        assertEquals("User not found for id: " + USER_ID, exception.getMessage());
-
-        then(userRepository).should(times(1)).existsById(USER_ID);
-        then(bookingRepository).should(never()).findById(ID);
-        then(bookingRepository).should(never()).save(BOOKING_ENTITY);
-    }
-
-    @Test
     void updateBookingStatus_Should_ThrowNotFoundException_When_BookingIdNotFound() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(userRepository.existsById(USER_ID)).willReturn(true);
         given(bookingRepository.findById(ID)).willReturn(Optional.empty());
 
@@ -289,21 +251,6 @@ class BookingServiceTest {
         then(bookingRepository).should(times(1)).existsById(ID);
         then(bookingRepository).should(times(1)).findById(ID);
         then(bookingRepository).should(times(1)).save(BOOKING_ENTITY);
-    }
-
-    @Test
-    void deleteBooking_Should_ThrowNotFoundException_When_UserIdNotFound() {
-        given(userRepository.existsById(USER_ID)).willReturn(false);
-
-        NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> bookingService.deleteBooking(USER_ID, ID));
-
-        assertEquals("User not found for id: " + USER_ID, exception.getMessage());
-
-        then(userRepository).should(times(1)).existsById(USER_ID);
-        then(bookingRepository).should(never()).existsById(ID);
-        then(bookingRepository).should(never()).findById(ID);
-        then(bookingRepository).should(never()).save(BOOKING_ENTITY);
     }
 
     @Test

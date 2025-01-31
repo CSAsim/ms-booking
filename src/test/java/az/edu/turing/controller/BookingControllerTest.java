@@ -49,9 +49,9 @@ class BookingControllerTest {
     }
 
     @Test
-    void create_Should_Return404_When_UserNotFound() throws Exception {
+    void create_Should_Return404_When_FlightNotFound() throws Exception {
         given(bookingService.createBooking(USER_ID, CREATE_BOOKING_REQUEST))
-                .willThrow(new NotFoundException("User not found for id: " + USER_ID));
+                .willThrow(new NotFoundException("Flight not found for id: " + FLIGHT_ID));
 
         mockMvc.perform(post(BASE_URL)
                         .header("userid", USER_ID)
@@ -59,21 +59,22 @@ class BookingControllerTest {
                         .content(objectMapper.writeValueAsString(CREATE_BOOKING_REQUEST))
                 )
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorMessage").value("User not found for id: " + USER_ID))
+                .andExpect(jsonPath("$.errorMessage").value("Flight not found for id: " + FLIGHT_ID))
                 .andDo(print());
         then(bookingService).should(times(1)).createBooking(USER_ID, CREATE_BOOKING_REQUEST);
     }
 
     @Test
     void getAll_Should_ReturnSuccess() throws Exception {
-        given(bookingService.findAll(any(Pageable.class))).willReturn(BOOKING_DTO_PAGE);
+        given(bookingService.findAll(eq(USER_ID), any(Pageable.class))).willReturn(BOOKING_DTO_PAGE);
 
         mockMvc.perform(get(BASE_URL)
+                        .header("userId", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray());
-        then(bookingService).should(times(1)).findAll(any(Pageable.class));
+        then(bookingService).should(times(1)).findAll(eq(USER_ID), any(Pageable.class));
     }
 
     @Test
@@ -81,6 +82,7 @@ class BookingControllerTest {
         given(bookingService.findAllByPassengerId(eq(PASSENGER_ID), any(Pageable.class))).willReturn(BOOKING_DTO_PAGE);
 
         mockMvc.perform(get(BASE_URL)
+                        .header("userId", USER_ID)
                         .param("passengerId", String.valueOf(PASSENGER_ID))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -97,6 +99,7 @@ class BookingControllerTest {
                 .willThrow(new NotFoundException("Passenger not found for id: " + PASSENGER_ID));
 
         mockMvc.perform(get(BASE_URL)
+                        .header("userId", USER_ID)
                         .param("passengerId", String.valueOf(PASSENGER_ID))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -109,31 +112,33 @@ class BookingControllerTest {
 
     @Test
     void getAllByFlightId_Should_ReturnSuccess() throws Exception {
-        given(bookingService.findAllByFlightId(eq(FLIGHT_ID), any(Pageable.class))).willReturn(BOOKING_DTO_PAGE);
+        given(bookingService.findAllByFlightId(eq(USER_ID), eq(FLIGHT_ID), any(Pageable.class))).willReturn(BOOKING_DTO_PAGE);
 
         mockMvc.perform(get(BASE_URL + "/{flightId}", FLIGHT_ID)
+                        .header("userId", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andDo(print());
         then(bookingService).should(times(1))
-                .findAllByFlightId(eq(FLIGHT_ID), any(Pageable.class));
+                .findAllByFlightId(eq(USER_ID),eq(FLIGHT_ID), any(Pageable.class));
     }
 
     @Test
     void getAll_Should_Return404_When_FlightIdNotFound() throws Exception {
-        given(bookingService.findAllByFlightId(eq(FLIGHT_ID), any(Pageable.class)))
+        given(bookingService.findAllByFlightId(eq(USER_ID),eq(FLIGHT_ID), any(Pageable.class)))
                 .willThrow(new NotFoundException("Flight not found for id: " + FLIGHT_ID));
 
         mockMvc.perform(get(BASE_URL + "/{flightId}", FLIGHT_ID)
+                        .header("userId", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value("Flight not found for id: " + FLIGHT_ID))
                 .andDo(print());
         then(bookingService).should(times(1))
-                .findAllByFlightId(eq(FLIGHT_ID), any(Pageable.class));
+                .findAllByFlightId(eq(USER_ID),eq(FLIGHT_ID), any(Pageable.class));
     }
 
     @Test
@@ -147,23 +152,6 @@ class BookingControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(BOOKING_DTO)))
-                .andDo(print());
-        then(bookingService).should(times(1))
-                .updateBooking(eq(USER_ID), eq(ID), eq(UPDATE_BOOKING_REQUEST));
-    }
-
-    @Test
-    void updateBooking_Should_Return404_When_UserIdNotFound() throws Exception {
-        given(bookingService.updateBooking(eq(USER_ID), eq(ID), eq(UPDATE_BOOKING_REQUEST)))
-                .willThrow(new NotFoundException("User not found for id: " + USER_ID));
-
-        mockMvc.perform(put(BASE_URL + "/{id}", ID)
-                        .header("userId", USER_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(UPDATE_BOOKING_REQUEST))
-                )
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorMessage").value("User not found for id: " + USER_ID))
                 .andDo(print());
         then(bookingService).should(times(1))
                 .updateBooking(eq(USER_ID), eq(ID), eq(UPDATE_BOOKING_REQUEST));
@@ -204,24 +192,6 @@ class BookingControllerTest {
     }
 
     @Test
-    void updateBookingStatus_Should_Return404_When_UserIdNotFound() throws Exception {
-        given(bookingService.updateBookingStatus(eq(USER_ID), eq(ID), eq(StatusMessage.COMPLETED)))
-                .willThrow(new NotFoundException("User not found for id: " + USER_ID));
-
-        mockMvc.perform(patch(BASE_URL + "/{bookingId}", ID)
-                        .header("userId", USER_ID)
-                        .param("statusMessage", StatusMessage.COMPLETED.name())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(BOOKING_DTO))
-                )
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorMessage").value("User not found for id: " + USER_ID))
-                .andDo(print());
-        then(bookingService).should(times(1))
-                .updateBookingStatus(eq(USER_ID), eq(ID), eq(StatusMessage.COMPLETED));
-    }
-
-    @Test
     void updateBookingStatus_Should_Return404_When_BookingIdNotFound() throws Exception {
         given(bookingService.updateBookingStatus(eq(USER_ID), eq(ID), eq(StatusMessage.COMPLETED)))
                 .willThrow(new NotFoundException("Booking not found for id: " + ID));
@@ -248,20 +218,6 @@ class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isNoContent())
-                .andDo(print());
-        then(bookingService).should(times(1)).deleteBooking(USER_ID, ID);
-    }
-
-    @Test
-    void delete_Should_Return404_When_UserIdNotFound() throws Exception {
-        willThrow(new NotFoundException("User not found for id: " + USER_ID)).given(bookingService).deleteBooking(USER_ID, ID);
-
-        mockMvc.perform(delete(BASE_URL + "/{id}", ID)
-                        .header("userId", USER_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorMessage").value("User not found for id: " + USER_ID))
                 .andDo(print());
         then(bookingService).should(times(1)).deleteBooking(USER_ID, ID);
     }

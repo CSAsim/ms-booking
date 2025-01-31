@@ -54,6 +54,7 @@ public interface UserTestConstants {
             .email(EMAIL)
             .phoneNumber(PHONE_NUMBER)
             .password(PASSWORD)
+            .confirmPassword(PASSWORD)
             .userRole(USER_ROLE)
             .build();
 

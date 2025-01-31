@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static az.edu.turing.common.BookingTestConstants.USER_ID;
+
 import static az.edu.turing.common.FlightTestConstants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -131,9 +131,10 @@ class FlightControllerTest {
 
     @Test
     void delete_ShouldDeleteFlight() throws Exception {
-        doNothing().when(flightService).delete(ID);
+        doNothing().when(flightService).delete(USER_ID, ID);
 
-        mockMvc.perform(delete("/api/v1/flights/{id}", ID))
+        mockMvc.perform(delete("/api/v1/flights/{id}", ID)
+                        .header("userId", USER_ID))
                 .andExpect(status().isNoContent());
     }
 }

@@ -26,18 +26,20 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<Page<BookingDto>> getAll(
+            @RequestHeader Long userId,
             @RequestParam(value = "passengerId", required = false) Long passengerId,
             @PageableDefault(size = 10) Pageable pageable) {
         if (passengerId != null) {
             return ResponseEntity.ok(bookingService.findAllByPassengerId(passengerId, pageable));
         }
-        return ResponseEntity.ok(bookingService.findAll(pageable));
+        return ResponseEntity.ok(bookingService.findAll(userId, pageable));
     }
 
     @GetMapping("/{flightId}")
-    public ResponseEntity<Page<BookingDto>> getAllByFlightId(@PathVariable("flightId") Long flightId,
+    public ResponseEntity<Page<BookingDto>> getAllByFlightId(@RequestHeader Long userId,
+                                                             @PathVariable("flightId") Long flightId,
                                                              @PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(bookingService.findAllByFlightId(flightId, pageable));
+        return ResponseEntity.ok(bookingService.findAllByFlightId(userId, flightId, pageable));
     }
 
     @PostMapping

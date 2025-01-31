@@ -28,6 +28,6 @@ public interface FlightService {
 
     FlightDto updateFlightStatus(Long userId, Long id, StatusMessage flightStatus);
 
-    void delete(Long id);
+    void delete(Long userId, Long id);
 
 }

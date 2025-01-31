@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public interface FlightTestConstants {
 
     Long ID = 1L;
+    Long USER_ID = 2L;
     int PAGE = 1;
     int SIZE = 4;
     String SORT_BY = "id";

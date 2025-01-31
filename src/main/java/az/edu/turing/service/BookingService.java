@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 
 public interface BookingService {
 
-    Page<BookingDto> findAll(Pageable pageable);
+    Page<BookingDto> findAll(Long usrId, Pageable pageable);
 
-    Page<BookingDto> findAllByFlightId(Long id, Pageable pageable);
+    Page<BookingDto> findAllByFlightId(Long userId, Long id, Pageable pageable);
 
     Page<BookingDto> findAllByPassengerId(Long id, Pageable pageable);
 

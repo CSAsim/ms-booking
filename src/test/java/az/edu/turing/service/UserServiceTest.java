@@ -3,12 +3,9 @@ package az.edu.turing.service;
 import az.edu.turing.domain.repository.UserRepository;
 import az.edu.turing.domain.repository.FlightRepository;
 import az.edu.turing.exception.AlreadyExistsException;
-import az.edu.turing.exception.InvalidInputException;
 import az.edu.turing.exception.NotFoundException;
 import az.edu.turing.mapper.UserMapper;
 import az.edu.turing.model.UserDto;
-import az.edu.turing.model.request.user.CreateUserRequest;
-import az.edu.turing.model.request.user.UpdateUserRequest;
 import az.edu.turing.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,10 +42,11 @@ class UserServiceTest {
 
     @Test
     void findAll_Should_ReturnSuccess() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(userRepository.findAll(PAGEABLE)).willReturn(USER_ENTITY_PAGE);
         given(userMapper.toDto(USER_ENTITY_PAGE)).willReturn(USER_DTO_PAGE);
 
-        Page<UserDto> result = userService.findAll(PAGEABLE);
+        Page<UserDto> result = userService.findAll(USER_ID, PAGEABLE);
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -59,10 +57,11 @@ class UserServiceTest {
 
     @Test
     void findById_Should_ReturnSuccess() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(USER_ENTITY));
         given(userMapper.toDto(USER_ENTITY)).willReturn(USER_DTO);
 
-        UserDto result = userService.findById(USER_ID);
+        UserDto result = userService.findById(USER_ID, USER_ID);
 
         assertNotNull(result);
         assertEquals(USER_DTO, result);
@@ -72,10 +71,11 @@ class UserServiceTest {
 
     @Test
     void findById_Should_ThrowNotFoundException_WhenUserNotFound() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(userRepository.findById(USER_ID)).willReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> userService.findById(USER_ID));
+                () -> userService.findById(USER_ID, USER_ID));
 
         assertEquals("User not found with id: " + USER_ID, exception.getMessage());
 
@@ -100,19 +100,20 @@ class UserServiceTest {
 
     @Test
     void create_Should_ThrowAlreadyExistsException_WhenUserAlreadyExists() {
-        given(userRepository.existsByEmail(NEW_USER_EMAIL)).willReturn(true);
+        given(userRepository.existsByEmail(EMAIL)).willReturn(true);
 
         AlreadyExistsException exception = assertThrows(AlreadyExistsException.class,
                 () -> userService.create(USER_ID, CREATE_USER_REQUEST));
 
-        assertEquals("User with email " + NEW_USER_EMAIL + " already exists.", exception.getMessage());
+        assertEquals("User with email " + EMAIL + " already exists.", exception.getMessage());
 
-        then(userRepository).should(times(1)).existsByEmail(NEW_USER_EMAIL);
+        then(userRepository).should(times(1)).existsByEmail(EMAIL);
         then(userRepository).should(never()).save(USER_ENTITY);
     }
 
     @Test
     void update_Should_ReturnSuccess() {
+        given(userRepository.existsById(USER_ID)).willReturn(true);
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(USER_ENTITY));
         given(userRepository.save(USER_ENTITY)).willReturn(USER_ENTITY);
         given(userMapper.toDto(USER_ENTITY)).willReturn(USER_DTO);
@@ -122,12 +123,14 @@ class UserServiceTest {
         assertNotNull(result);
         assertEquals(USER_DTO, result);
 
+        then(userRepository).should(times(1)).existsById(USER_ID);
         then(userRepository).should(times(1)).findById(USER_ID);
         then(userRepository).should(times(1)).save(USER_ENTITY);
     }
 
     @Test
     void update_Should_ThrowNotFoundException_WhenUserNotFound() {
+        given(userRepository.existsById(USER_ID)).willReturn(true);
         given(userRepository.findById(USER_ID)).willReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
@@ -141,6 +144,7 @@ class UserServiceTest {
 
     @Test
     void delete_Should_ReturnSuccess() {
+        given(userRepository.existsById(USER_ID)).willReturn(true);
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(USER_ENTITY));
 
         userService.delete(USER_ID, USER_ID);
@@ -153,6 +157,7 @@ class UserServiceTest {
 
     @Test
     void delete_Should_ThrowNotFoundException_WhenUserNotFound() {
+        given(userRepository.existsById(USER_ID)).willReturn(true);
         given(userRepository.findById(USER_ID)).willReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
@@ -165,10 +170,11 @@ class UserServiceTest {
 
     @Test
     void findByEmail_Should_ReturnSuccess() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(userRepository.findByEmail(EMAIL)).willReturn(Optional.of(USER_ENTITY));
         given(userMapper.toDto(USER_ENTITY)).willReturn(USER_DTO);
 
-        UserDto result = userService.findByEmail(EMAIL);
+        UserDto result = userService.findByEmail(USER_ID, EMAIL);
 
         assertNotNull(result);
         assertEquals(USER_DTO, result);
@@ -178,10 +184,11 @@ class UserServiceTest {
 
     @Test
     void findByEmail_Should_ThrowNotFoundException_WhenEmailNotFound() {
+        given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(userRepository.findByEmail(EMAIL)).willReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> userService.findByEmail(EMAIL));
+                () -> userService.findByEmail(USER_ID, EMAIL));
 
         assertEquals("User not found for email: " + EMAIL, exception.getMessage());
 

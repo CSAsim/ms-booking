@@ -6,17 +6,15 @@ import az.edu.turing.model.request.user.UpdateUserRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 public interface UserService {
 
-    Page<UserDto> findAll(Pageable pageable);
+    Page<UserDto> findAll(Long userId, Pageable pageable);
 
-    Page<UserDto> findAllByFlightId(Long flightId, Pageable pageable); // Write @Query in left join.
+    Page<UserDto> findAllByFlightId(Long userId, Long flightId, Pageable pageable); // Write @Query in left join.
 
-    UserDto findById(Long id);
+    UserDto findById(Long userId, Long id);
 
-    UserDto findByEmail(String email);
+    UserDto findByEmail(Long userId, String email);
 
     UserDto create(Long userId, CreateUserRequest userRequest);
 

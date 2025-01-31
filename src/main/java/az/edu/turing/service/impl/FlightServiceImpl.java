@@ -3,6 +3,7 @@ package az.edu.turing.service.impl;
 import az.edu.turing.domain.entity.FlightEntity;
 import az.edu.turing.domain.repository.FlightRepository;
 import az.edu.turing.domain.repository.FlightSpecification;
+import az.edu.turing.domain.repository.UserRepository;
 import az.edu.turing.exception.AlreadyExistsException;
 import az.edu.turing.exception.InvalidInputException;
 import az.edu.turing.exception.NotFoundException;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class FlightServiceImpl implements FlightService {
 
+    private final UserRepository userRepository;
     private FlightEntity existingFlight;
     private final FlightMapper flightMapper;
     private final FlightRepository flightRepository;
@@ -60,13 +62,14 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightDto create(Long id, CreateFlightRequest flightRequest) {
+    public FlightDto create(Long userId, CreateFlightRequest flightRequest) {
+        checkUserRole(userId);
         if (flightRepository.existsByFlightNumber(flightRequest.getFlightNumber())) {
             throw new AlreadyExistsException("Flight with number " + flightRequest.getFlightNumber() +
                     " already exists");
         }
         FlightEntity flightEntity = flightMapper.toEntity(flightRequest);
-        flightEntity.setCreatedBy(id);
+        flightEntity.setCreatedBy(userId);
         flightEntity = flightRepository.save(flightEntity);
 
         return flightMapper.toDto(flightEntity);
@@ -74,6 +77,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public FlightDto update(Long userId, Long id, UpdateFlightRequest flightRequest) {
+        checkUserRole(userId);
         if (flightRequest.getDeparture() == null || flightRequest.getDestination() == null || flightRequest.getDepartureTime() == null) {
             throw new InvalidInputException("Departure, destination, and departure time must be provided.");
         }
@@ -90,6 +94,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public FlightDto updateFlightNumber(Long userId, Long id, String flightNumber) {
+        checkUserRole(userId);
         existingFlight = getFlightEntity(id);
         existingFlight.setUpdatedBy(userId);
         existingFlight.setFlightNumber(flightNumber);
@@ -101,6 +106,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public FlightDto updateFlightStatus(Long userId, Long id, StatusMessage flightStatus) {
+        checkUserRole(userId);
         existingFlight = getFlightEntity(id);
         existingFlight.setUpdatedBy(userId);
         existingFlight.setFlightStatus(flightStatus);
@@ -116,12 +122,19 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long userId, Long id) {
+        checkUserRole(userId);
         existingFlight = getFlightEntity(id);
 
         existingFlight.setFlightStatus(StatusMessage.CANCELLED);
 
         flightRepository.save(existingFlight);
+    }
+
+    private void checkUserRole(Long userId) {
+        if(!userRepository.isAdmin(userId)) {
+            throw new InvalidInputException("You can not get all users infos");
+        }
     }
 
     private boolean existsByFlightNumber(String flightNumber) {

@@ -92,8 +92,9 @@ public class FlightController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        flightService.delete(id);
+    public ResponseEntity<Void> delete(@RequestHeader Long userId,
+                                       @PathVariable Long id) {
+        flightService.delete(userId, id);
         return ResponseEntity.noContent().build();
     }
 }

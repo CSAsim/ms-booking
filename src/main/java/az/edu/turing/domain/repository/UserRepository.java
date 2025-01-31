@@ -8,11 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 @Registered
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
+    @Query("SELECT CASE WHEN u.userRole = 'ADMIN' THEN TRUE ELSE FALSE END FROM UserEntity u WHERE u.id = :userId")
+    boolean isAdmin(Long userId);
 
     Page<UserEntity> findAll(Pageable pageable);
 

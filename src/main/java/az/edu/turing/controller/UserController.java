@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Validated
 @RestController
 @RequestMapping("/api/v1/users")
@@ -24,22 +22,23 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<Page<UserDto>> getAll(@RequestParam(required = false) Long flightId,
+    public ResponseEntity<Page<UserDto>> getAll(@RequestHeader Long userId,
+                                                @RequestParam(required = false) Long flightId,
                                                 @PageableDefault(size = 10) Pageable pageable) {
         if (flightId != null) {
-            return ResponseEntity.ok(userService.findAllByFlightId(flightId, pageable));
+            return ResponseEntity.ok(userService.findAllByFlightId(userId, flightId, pageable));
         }
-        return ResponseEntity.ok(userService.findAll(pageable));
+        return ResponseEntity.ok(userService.findAll(userId, pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.findById(id));
+    public ResponseEntity<UserDto> getById(@RequestHeader Long userId, @PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(userId, id));
     }
 
     @GetMapping("/email")
-    public ResponseEntity<UserDto> getByEmail(@RequestParam String email) {
-        return ResponseEntity.ok(userService.findByEmail(email));
+    public ResponseEntity<UserDto> getByEmail(@RequestHeader Long userId, @RequestParam String email) {
+        return ResponseEntity.ok(userService.findByEmail(userId, email));
     }
 
     @PostMapping

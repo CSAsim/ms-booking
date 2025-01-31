@@ -6,6 +6,7 @@ import az.edu.turing.domain.entity.UserEntity;
 import az.edu.turing.domain.repository.BookingRepository;
 import az.edu.turing.domain.repository.FlightRepository;
 import az.edu.turing.domain.repository.UserRepository;
+import az.edu.turing.exception.InvalidInputException;
 import az.edu.turing.exception.NotFoundException;
 import az.edu.turing.mapper.BookingMapper;
 import az.edu.turing.model.BookingDto;
@@ -15,9 +16,7 @@ import az.edu.turing.model.request.booking.UpdateBookingRequest;
 import az.edu.turing.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,14 +29,16 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
 
     @Override
-    public Page<BookingDto> findAll(Pageable pageable) {
+    public Page<BookingDto> findAll(Long userId, Pageable pageable) {
+        checkUserRole(userId);
         return bookingMapper.toDto(
                 bookingRepository.findAll(pageable)
         );
     }
 
     @Override
-    public Page<BookingDto> findAllByFlightId(Long id, Pageable pageable) {
+    public Page<BookingDto> findAllByFlightId(Long userId, Long id, Pageable pageable) {
+        checkUserRole(userId);
         existsByFlightId(id);
         return bookingMapper.toDto(
                 bookingRepository.findAllByFlightId(id, pageable)
@@ -88,7 +89,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto updateBookingStatus(Long userId, Long id, StatusMessage bookingStatus) {
-
+        checkUserRole(userId);
         existsByUserId(userId);
         return bookingRepository.findById(id)
                 .map(bookingEntity -> {
@@ -110,6 +111,13 @@ public class BookingServiceImpl implements BookingService {
                     booking.setBookingStatus(StatusMessage.CANCELLED);
                     bookingRepository.save(booking);
                 });
+    }
+
+    private void checkUserRole(Long userId) {
+
+        if(!userRepository.isAdmin(userId)) {
+            throw new InvalidInputException("You can not get all users infos");
+        }
     }
 
     private void existsByFlightId(Long id) {
