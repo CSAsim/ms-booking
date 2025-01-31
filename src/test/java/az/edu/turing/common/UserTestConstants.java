@@ -11,11 +11,12 @@ import java.util.List;
 
 public interface UserTestConstants {
 
-    Long ID = 1L;
+    Long USER_ID = 1L;
     Long NON_EXISTENT_USER_ID = 999L;
     String NAME = "test_name";
     String SURNAME = "test_surname";
     String EMAIL = "test@example.com";
+    String NEW_USER_EMAIL = "newuser@example.com";
     String PHONE_NUMBER = "+123456789";
     String PASSWORD = "securePassword123";
     UserRole USER_ROLE = UserRole.USER;
@@ -28,7 +29,7 @@ public interface UserTestConstants {
     Pageable PAGEABLE = PageRequest.of(PAGE, SIZE, Sort.by(SORT_BY));
 
     UserEntity USER_ENTITY = UserEntity.builder()
-            .id(ID)
+            .id(USER_ID)
             .name(NAME)
             .surname(SURNAME)
             .email(EMAIL)
@@ -39,7 +40,7 @@ public interface UserTestConstants {
             .build();
 
     UserDto USER_DTO = UserDto.builder()
-            .id(ID)
+            .id(USER_ID)
             .name(NAME)
             .surname(SURNAME)
             .email(EMAIL)
