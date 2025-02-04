@@ -1,8 +1,8 @@
 package az.edu.turing.common;
 
 import az.edu.turing.domain.entity.FlightEntity;
-import az.edu.turing.model.FlightDto;
-import az.edu.turing.model.enums.StatusMessage;
+import az.edu.turing.model.dto.FlightDto;
+import az.edu.turing.model.enums.FlightStatus;
 import az.edu.turing.model.request.flight.CreateFlightRequest;
 import az.edu.turing.model.request.flight.UpdateFlightRequest;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +22,7 @@ public interface FlightTestConstants {
     String DEPARTURE = "Baku";
     String DESTINATION = "Kiev";
     LocalDateTime DEPARTURE_TIME = LocalDateTime.now();
-    StatusMessage FLIGHT_STATUS = StatusMessage.PENDING;
+    FlightStatus FLIGHT_STATUS = FlightStatus.PENDING;
     int AVAILABLE_SEATS = 17;
 
     Pageable PAGEABLE = PageRequest.of(PAGE, SIZE, Sort.by(SORT_BY));

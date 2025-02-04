@@ -1,7 +1,7 @@
 package az.edu.turing.common;
 
 import az.edu.turing.domain.entity.UserEntity;
-import az.edu.turing.model.UserDto;
+import az.edu.turing.model.dto.UserDto;
 import az.edu.turing.model.enums.UserRole;
 import az.edu.turing.model.request.user.CreateUserRequest;
 import az.edu.turing.model.request.user.UpdateUserRequest;

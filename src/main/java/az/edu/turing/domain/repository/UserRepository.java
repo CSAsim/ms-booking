@@ -22,6 +22,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(@Param("email") String email);
     boolean existsByEmail(String email);
 
-    @Query("SELECT u FROM UserEntity u INNER JOIN BookingEntity b ON b.flight.id = :flightId and b.passenger.id = u.id")
+    @Query("SELECT u FROM UserEntity u INNER JOIN BookingEntity b ON b.flight.id = :flightId and b.user.id = u.id")
     Page<UserEntity> findAllByFlightId(Long flightId, Pageable pageable);
 }

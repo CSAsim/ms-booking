@@ -8,16 +8,16 @@ spring:
     password: postgres
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
 
-#  liquibase:
-#    enabled: true
-#    change-log: classpath:liquibase/changelog-master.yml
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog-master.yml
 server:
   port: 8088
 

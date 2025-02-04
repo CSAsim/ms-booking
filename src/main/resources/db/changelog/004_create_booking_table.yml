@@ -1,0 +1,80 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004_create_booking_table
+      author: Nurcan Nefizade
+      changes:
+        - createTable:
+            tableName: booking
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: flight_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: seat_number
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: booking_status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_amount
+                  type: DOUBLE PRECISION
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: bigint
+              - column:
+                  name: updated_by
+                  type: bigint
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+        - addForeignKeyConstraint:
+            baseTableName: booking
+            baseColumnNames: flight_id
+            referencedTableName: flight
+            referencedColumnNames: id
+            constraintName: fk_booking_flight
+        - addForeignKeyConstraint:
+            baseTableName: booking
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            constraintName: fk_booking_user
+        - addForeignKeyConstraint:
+            baseTableName: booking
+            baseColumnNames: created_by
+            referencedTableName: user
+            referencedColumnNames: id
+            constraintName: fk_booking_created_by
+        - addForeignKeyConstraint:
+            baseTableName: booking
+            baseColumnNames: updated_by
+            referencedTableName: user
+            referencedColumnNames: id
+            constraintName: fk_booking_updated_by
+
+
+            remarks: This is bookings table to store bookings' info.

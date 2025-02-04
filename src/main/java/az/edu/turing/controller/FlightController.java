@@ -1,13 +1,13 @@
 package az.edu.turing.controller;
 
-import az.edu.turing.model.FlightDetailsDto;
-import az.edu.turing.model.FlightDto;
-import az.edu.turing.model.enums.StatusMessage;
+import az.edu.turing.model.dto.FlightDetailDto;
+import az.edu.turing.model.dto.FlightDto;
+import az.edu.turing.model.enums.FlightStatus;
 import az.edu.turing.model.request.flight.CreateFlightRequest;
 import az.edu.turing.model.request.flight.UpdateFlightRequest;
-import az.edu.turing.model.request.flightDetails.CreateFlightDetailsRequest;
-import az.edu.turing.model.request.flightDetails.UpdateFlightDetailsRequest;
-import az.edu.turing.service.FlightDetailsService;
+import az.edu.turing.model.request.flightDetails.CreateFlightDetailRequest;
+import az.edu.turing.model.request.flightDetails.UpdateFlightDetailRequest;
+import az.edu.turing.service.FlightDetailService;
 import az.edu.turing.service.FlightService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -39,7 +39,7 @@ import java.time.LocalDateTime;
 public class FlightController {
 
     private final FlightService flightService;
-    private final FlightDetailsService flightDetailsService;
+    private final FlightDetailService flightDetailsService;
 
 
     @GetMapping
@@ -80,7 +80,7 @@ public class FlightController {
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<FlightDto> updateFlightStatus(@RequestHeader Long userId, @PathVariable Long id,
-                                                        @NotNull @RequestParam StatusMessage flightStatus) {
+                                                        @NotNull @RequestParam FlightStatus flightStatus) {
         FlightDto updatedFlight = flightService.updateFlightStatus(userId, id, flightStatus);
         return ResponseEntity.ok(updatedFlight);
     }
@@ -94,29 +94,29 @@ public class FlightController {
     // Flight Details endpoints
 
     @GetMapping("/{flightId}/details")
-    public ResponseEntity<FlightDetailsDto> getDetailsByFlightId(@PathVariable("flightId") Long flightId) {
-        FlightDetailsDto flightDetails = flightDetailsService.findByFlightId(flightId);
+    public ResponseEntity<FlightDetailDto> getDetailsByFlightId(@PathVariable("flightId") Long flightId) {
+        FlightDetailDto flightDetails = flightDetailsService.findByFlightId(flightId);
         return ResponseEntity.ok(flightDetails);
     }
 
     @PostMapping("/{flightId}/details")
-    public ResponseEntity<FlightDetailsDto> createDetails(
+    public ResponseEntity<FlightDetailDto> createDetails(
             @PathVariable("flightId") Long flightId,
             @RequestParam(value = "userId") Long userId,
-            @Valid @RequestBody CreateFlightDetailsRequest request) {
+            @Valid @RequestBody CreateFlightDetailRequest request) {
         request.setFlightId(flightId);
-        FlightDetailsDto createdDetails = flightDetailsService.create(userId, request);
+        FlightDetailDto createdDetails = flightDetailsService.create(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDetails);
     }
 
     @PutMapping("/{flightId}/details/{id}")
-    public ResponseEntity<FlightDetailsDto> updateDetails(
+    public ResponseEntity<FlightDetailDto> updateDetails(
             @RequestParam(value = "userId") Long userId,
             @PathVariable("flightId") Long flightId,
             @PathVariable("id") Long id,
-            @Valid @RequestBody UpdateFlightDetailsRequest request) {
+            @Valid @RequestBody UpdateFlightDetailRequest request) {
         request.setFlightId(flightId);
-        FlightDetailsDto updatedDetails = flightDetailsService.updateByFlightId(userId, id, request);
+        FlightDetailDto updatedDetails = flightDetailsService.updateByFlightId(userId, id, request);
         return ResponseEntity.ok(updatedDetails);
     }
 

@@ -1,6 +1,6 @@
 package az.edu.turing.controller;
 
-import az.edu.turing.model.UserDto;
+import az.edu.turing.model.dto.UserDto;
 import az.edu.turing.model.request.user.CreateUserRequest;
 import az.edu.turing.model.request.user.UpdateUserRequest;
 import az.edu.turing.service.UserService;

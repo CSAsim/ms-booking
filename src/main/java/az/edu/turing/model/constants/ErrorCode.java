@@ -1,8 +1,5 @@
 package az.edu.turing.model.constants;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 public final class ErrorCode {
 
     public static final String NOT_FOUND = "not_found";

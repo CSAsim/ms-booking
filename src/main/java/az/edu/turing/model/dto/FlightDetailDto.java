@@ -1,6 +1,5 @@
-package az.edu.turing.model.request.flightDetails;
+package az.edu.turing.model.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,17 +9,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateFlightDetailsRequest {
+public class FlightDetailDto {
 
-    @NotBlank
+    private Long id;
+
     private String airlineName;
 
-    @NotBlank
     private String planeModel;
 
-    @NotBlank
-    private Integer capacity;
+    private Double allowedWeight;
 
     private Long flightId;
-
 }

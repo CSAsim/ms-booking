@@ -1,4 +1,4 @@
-package az.edu.turing.model;
+package az.edu.turing.model.dto;
 
 import az.edu.turing.model.enums.UserRole;
 import lombok.Builder;

@@ -3,8 +3,8 @@ package az.edu.turing.common;
 import az.edu.turing.domain.entity.BookingEntity;
 import az.edu.turing.domain.entity.FlightEntity;
 import az.edu.turing.domain.entity.UserEntity;
-import az.edu.turing.model.BookingDto;
-import az.edu.turing.model.enums.StatusMessage;
+import az.edu.turing.model.dto.BookingDto;
+import az.edu.turing.model.enums.BookingStatus;
 import az.edu.turing.model.enums.UserRole;
 import az.edu.turing.model.request.booking.CreateBookingRequest;
 import az.edu.turing.model.request.booking.UpdateBookingRequest;
@@ -19,7 +19,7 @@ import java.util.List;
 public interface BookingTestConstants {
 
     Long ID = 1L;
-    Long USER_ID = 1L;
+    Long USER_ID = 2L;
     Long FLIGHT_ID = 2L;
     Long PASSENGER_ID = 2L;
     int PAGE = 1;
@@ -33,20 +33,20 @@ public interface BookingTestConstants {
     Pageable PAGEABLE = PageRequest.of(PAGE, SIZE, Sort.by(SORT_BY));
 
     UserEntity USER_ENTITY = UserEntity.builder()
-            .id(ID)
+            .id(USER_ID)
             .name(NAME)
             .userRole(UserRole.USER)
             .build();
 
     FlightEntity FLIGHT_ENTITY = FlightEntity.builder()
-            .id(ID)
+            .id(FLIGHT_ID)
             .build();
 
     BookingEntity BOOKING_ENTITY = BookingEntity.builder()
             .id(ID)
             .flight(FLIGHT_ENTITY)
-            .passenger(USER_ENTITY)
-            .bookingStatus(StatusMessage.PENDING)
+            .user(USER_ENTITY)
+            .bookingStatus(BookingStatus.PENDING)
             .totalAmount(TOTAL_AMOUNT)
             .build();
 
@@ -54,9 +54,9 @@ public interface BookingTestConstants {
     BookingDto BOOKING_DTO = BookingDto.builder()
             .id(ID)
             .flightId(FLIGHT_ID)
-            .passengerId(PASSENGER_ID)
+            .userId(PASSENGER_ID)
             .totalAmount(TOTAL_AMOUNT)
-            .bookingStatus(StatusMessage.PENDING)
+            .bookingStatus(BookingStatus.PENDING)
             .build();
 
     CreateBookingRequest CREATE_BOOKING_REQUEST = CreateBookingRequest.builder()
@@ -67,7 +67,7 @@ public interface BookingTestConstants {
             .build();
 
     UpdateBookingRequest UPDATE_BOOKING_REQUEST = UpdateBookingRequest.builder()
-            .bookingStatus(StatusMessage.COMPLETED)
+            .bookingStatus(BookingStatus.COMPLETED)
             .seatNumber(SEAT_NUMBER)
             .totalAmount(TOTAL_AMOUNT)
             .build();

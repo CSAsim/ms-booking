@@ -1,7 +1,7 @@
 package az.edu.turing.mapper;
 
 import az.edu.turing.domain.entity.BookingEntity;
-import az.edu.turing.model.BookingDto;
+import az.edu.turing.model.dto.BookingDto;
 import az.edu.turing.model.request.booking.CreateBookingRequest;
 import az.edu.turing.model.request.booking.UpdateBookingRequest;
 import org.mapstruct.Mapper;
@@ -17,7 +17,7 @@ public interface BookingMapper {
     BookingMapper INSTANCE = Mappers.getMapper(BookingMapper.class);
 
     @Mapping(source = "flight.id", target = "flightId")
-    @Mapping(source = "passenger.id", target = "passengerId")
+    @Mapping(source = "user.id", target = "userId")
     BookingDto toDto(BookingEntity entity);
 
     List<BookingDto> toDto(List<BookingEntity> entity);
@@ -28,7 +28,7 @@ public interface BookingMapper {
 
 
     @Mapping(source = "flightId", target = "flight.id")
-    @Mapping(source = "passengerId", target = "passenger.id")
+    @Mapping(source = "passengerId", target = "user.id")
     BookingEntity toEntity(CreateBookingRequest request);
 
     BookingEntity toEntity(UpdateBookingRequest request);

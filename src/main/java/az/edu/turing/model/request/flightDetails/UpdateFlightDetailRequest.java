@@ -1,7 +1,7 @@
 package az.edu.turing.model.request.flightDetails;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateFlightDetailsRequest {
+public class UpdateFlightDetailRequest {
 
     @NotBlank
     private String airlineName;
@@ -19,9 +19,9 @@ public class CreateFlightDetailsRequest {
     @NotBlank
     private String planeModel;
 
-    @NotBlank
-    private Integer capacity;
+    @NotNull
+    private Double allowedWeight;
 
-    @Min(1)
     private Long flightId;
+
 }

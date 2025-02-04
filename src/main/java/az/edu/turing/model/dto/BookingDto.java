@@ -1,6 +1,6 @@
-package az.edu.turing.model;
+package az.edu.turing.model.dto;
 
-import az.edu.turing.model.enums.StatusMessage;
+import az.edu.turing.model.enums.BookingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,9 +16,9 @@ public class BookingDto {
 
     private long id;
     private long flightId;
-    private long passengerId;
+    private long userId;
     private long seatNumber;
-    private StatusMessage bookingStatus;
+    private BookingStatus bookingStatus;
     private double totalAmount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

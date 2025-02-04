@@ -1,12 +1,11 @@
 package az.edu.turing.controller;
 
 import az.edu.turing.exception.NotFoundException;
-import az.edu.turing.model.enums.StatusMessage;
-import az.edu.turing.service.FlightDetailsService;
+import az.edu.turing.model.enums.FlightStatus;
+import az.edu.turing.service.FlightDetailService;
 import az.edu.turing.service.FlightService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,7 +39,7 @@ class FlightControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private FlightDetailsService flightDetailsService;
+    private FlightDetailService flightDetailsService;
 
     @MockBean
     private FlightService flightService;
@@ -116,11 +115,11 @@ class FlightControllerTest {
 
     @Test
     void updateFlightStatus_ShouldUpdateStatus() throws Exception {
-        when(flightService.updateFlightStatus(USER_ID, ID, StatusMessage.CANCELLED)).thenReturn(FLIGHT_DTO);
+        when(flightService.updateFlightStatus(USER_ID, ID, FlightStatus.CANCELLED)).thenReturn(FLIGHT_DTO);
 
         mockMvc.perform(patch("/api/v1/flights/{id}/status", ID)
                         .header("userId", USER_ID)
-                        .param("flightStatus", StatusMessage.CANCELLED.name()))
+                        .param("flightStatus", FlightStatus.CANCELLED.name()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(FLIGHT_DTO)));
     }

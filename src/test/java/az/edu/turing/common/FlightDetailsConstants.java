@@ -1,12 +1,12 @@
 package az.edu.turing.common;
 
-import az.edu.turing.domain.entity.FlightDetailsEntity;
+import az.edu.turing.domain.entity.FlightDetailEntity;
 import az.edu.turing.domain.entity.FlightEntity;
 import az.edu.turing.domain.entity.UserEntity;
-import az.edu.turing.model.FlightDetailsDto;
+import az.edu.turing.model.dto.FlightDetailDto;
 import az.edu.turing.model.enums.UserRole;
-import az.edu.turing.model.request.flightDetails.CreateFlightDetailsRequest;
-import az.edu.turing.model.request.flightDetails.UpdateFlightDetailsRequest;
+import az.edu.turing.model.request.flightDetails.CreateFlightDetailRequest;
+import az.edu.turing.model.request.flightDetails.UpdateFlightDetailRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +26,7 @@ public interface FlightDetailsConstants {
     String NAME = "user";
     String AIRLINE_NAME = "airline";
     String PLANE_MODEL = "mode1";
-    Integer CAPACITY = 33;
+    Double ALLOWED_WEIGHT = 33.0;
 
     FlightEntity FLIGHT_ENTITY = FlightEntity.builder()
             .id(FLIGHT_ID)
@@ -38,37 +38,37 @@ public interface FlightDetailsConstants {
             .userRole(UserRole.USER)
             .build();
 
-    FlightDetailsEntity FLIGHT_DETAILS_ENTITY = FlightDetailsEntity.builder()
+    FlightDetailEntity FLIGHT_DETAILS_ENTITY = FlightDetailEntity.builder()
             .id(ID)
             .airlineName(AIRLINE_NAME)
             .planeModel(PLANE_MODEL)
-            .capacity(CAPACITY)
+            .allowedWeight(ALLOWED_WEIGHT)
             .flight(FLIGHT_ENTITY)
             .build();
 
-    FlightDetailsDto FLIGHT_DETAILS_DTO = FlightDetailsDto.builder()
+    FlightDetailDto FLIGHT_DETAILS_DTO = FlightDetailDto.builder()
             .id(ID)
             .airlineName(AIRLINE_NAME)
             .planeModel(PLANE_MODEL)
-            .capacity(CAPACITY)
+            .allowedWeight(ALLOWED_WEIGHT)
             .flightId(FLIGHT_ID)
             .build();
 
-    CreateFlightDetailsRequest CREATE_FLIGHT_DETAILS_REQUEST = CreateFlightDetailsRequest.builder()
+    CreateFlightDetailRequest CREATE_FLIGHT_DETAILS_REQUEST = CreateFlightDetailRequest.builder()
             .airlineName(AIRLINE_NAME)
             .planeModel(PLANE_MODEL)
-            .capacity(CAPACITY)
+            .allowedWeight(ALLOWED_WEIGHT)
             .flightId(FLIGHT_ID)
             .build();
 
-    UpdateFlightDetailsRequest UPDATE_FLIGHT_DETAILS_REQUEST = UpdateFlightDetailsRequest.builder()
+    UpdateFlightDetailRequest UPDATE_FLIGHT_DETAILS_REQUEST = UpdateFlightDetailRequest.builder()
             .flightId(FLIGHT_ID)
             .airlineName(AIRLINE_NAME)
             .planeModel(PLANE_MODEL)
-            .capacity(CAPACITY)
+            .allowedWeight(ALLOWED_WEIGHT)
             .build();
 
     Pageable PAGEABLE = PageRequest.of(PAGE, SIZE, Sort.by(SORT_BY));
-    Page<FlightDetailsEntity> FLIGHT_DETAILS_ENTITY_PAGE = new PageImpl<>(List.of(FLIGHT_DETAILS_ENTITY), PAGEABLE, 1);
-    Page<FlightDetailsDto> FLIGHT_DETAILS_DTO_PAGE = new PageImpl<>(List.of(FLIGHT_DETAILS_DTO), PAGEABLE, 1);
+    Page<FlightDetailEntity> FLIGHT_DETAILS_ENTITY_PAGE = new PageImpl<>(List.of(FLIGHT_DETAILS_ENTITY), PAGEABLE, 1);
+    Page<FlightDetailDto> FLIGHT_DETAILS_DTO_PAGE = new PageImpl<>(List.of(FLIGHT_DETAILS_DTO), PAGEABLE, 1);
 }

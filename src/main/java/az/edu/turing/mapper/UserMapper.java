@@ -1,9 +1,7 @@
 package az.edu.turing.mapper;
 
-import az.edu.turing.domain.entity.BookingEntity;
 import az.edu.turing.domain.entity.UserEntity;
-import az.edu.turing.model.BookingDto;
-import az.edu.turing.model.UserDto;
+import az.edu.turing.model.dto.UserDto;
 import az.edu.turing.model.request.user.CreateUserRequest;
 import az.edu.turing.model.request.user.UpdateUserRequest;
 import org.mapstruct.Mapper;

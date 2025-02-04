@@ -18,7 +18,7 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
     @Query(value = "SELECT b FROM BookingEntity b WHERE b.flight.id = :flightId")
     Page<BookingEntity> findAllByFlightId(@Param("flightId") Long flightId, Pageable pageable);
 
-    @Query(value = "SELECT b FROM BookingEntity b WHERE b.passenger.id = :passengerId")
+    @Query(value = "SELECT b FROM BookingEntity b WHERE b.user.id = :passengerId")
     Page<BookingEntity> findAllByPassengerId(@Param("passengerId") Long passengerId, Pageable pageable);
 
 }

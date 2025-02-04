@@ -1,7 +1,7 @@
 package az.edu.turing.controller;
 
 import az.edu.turing.exception.NotFoundException;
-import az.edu.turing.model.enums.StatusMessage;
+import az.edu.turing.model.enums.BookingStatus;
 import az.edu.turing.service.BookingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -179,11 +179,11 @@ class BookingControllerTest {
 
     @Test
     void updateBookingStatus_Should_ReturnSuccess() throws Exception {
-        given(bookingService.updateBookingStatus(eq(USER_ID), eq(ID), eq(StatusMessage.COMPLETED))).willReturn(BOOKING_DTO);
+        given(bookingService.updateBookingStatus(eq(USER_ID), eq(ID), eq(BookingStatus.COMPLETED))).willReturn(BOOKING_DTO);
 
         mockMvc.perform(patch(BASE_URL + "/{bookingId}", ID)
                         .header("userId", USER_ID)
-                        .param("statusMessage", StatusMessage.COMPLETED.name())
+                        .param("statusMessage", BookingStatus.COMPLETED.name())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(BOOKING_DTO))
                 )
@@ -191,25 +191,25 @@ class BookingControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(BOOKING_DTO)))
                 .andDo(print());
         then(bookingService).should(times(1))
-                .updateBookingStatus(eq(USER_ID), eq(ID), eq(StatusMessage.COMPLETED));
+                .updateBookingStatus(eq(USER_ID), eq(ID), eq(BookingStatus.COMPLETED));
     }
 
     @Test
     void updateBookingStatus_Should_Return404_When_BookingIdNotFound() throws Exception {
-        given(bookingService.updateBookingStatus(eq(USER_ID), eq(ID), eq(StatusMessage.COMPLETED)))
+        given(bookingService.updateBookingStatus(eq(USER_ID), eq(ID), eq(BookingStatus.COMPLETED)))
                 .willThrow(new NotFoundException("Booking not found for id: " + ID));
 
         mockMvc.perform(patch(BASE_URL + "/{bookingId}", ID)
                         .header("userId", USER_ID)
-                        .param("statusMessage", StatusMessage.COMPLETED.name())
+                        .param("statusMessage", BookingStatus.COMPLETED.name())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(BOOKING_DTO))
                 )
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorMessage").value("Booking not found for id: " + USER_ID))
+                .andExpect(jsonPath("$.errorMessage").value("Booking not found for id: " + ID))
                 .andDo(print());
         then(bookingService).should(times(1))
-                .updateBookingStatus(eq(USER_ID), eq(ID), eq(StatusMessage.COMPLETED));
+                .updateBookingStatus(eq(USER_ID), eq(ID), eq(BookingStatus.COMPLETED));
     }
 
     @Test

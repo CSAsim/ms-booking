@@ -1,7 +1,8 @@
 package az.edu.turing.model.enums;
 
-public enum StatusMessage {
+public enum BookingStatus {
+
     PENDING,
     CANCELLED,
-    COMPLETED,
+    COMPLETED
 }

@@ -1,7 +1,7 @@
 package az.edu.turing.controller;
 
-import az.edu.turing.model.BookingDto;
-import az.edu.turing.model.enums.StatusMessage;
+import az.edu.turing.model.dto.BookingDto;
+import az.edu.turing.model.enums.BookingStatus;
 import az.edu.turing.model.request.booking.CreateBookingRequest;
 import az.edu.turing.model.request.booking.UpdateBookingRequest;
 import az.edu.turing.service.BookingService;
@@ -69,7 +69,7 @@ public class BookingController {
     @PatchMapping("/{bookingId}")
     public ResponseEntity<BookingDto> updateStatus(@RequestHeader Long userId,
                                                    @PathVariable("bookingId") Long bookingId,
-                                                   @RequestParam @NotNull StatusMessage statusMessage) {
+                                                   @RequestParam @NotNull BookingStatus statusMessage) {
         return ResponseEntity.ok(bookingService.updateBookingStatus(userId, bookingId, statusMessage));
     }
 

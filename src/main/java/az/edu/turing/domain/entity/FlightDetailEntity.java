@@ -1,6 +1,10 @@
 package az.edu.turing.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,8 +18,12 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "flight_details")
-public class FlightDetailsEntity extends BaseEntity {
+@Table(name = "flight_detail")
+public class FlightDetailEntity extends BaseEntity {
+
+    @OneToOne
+    @JoinColumn(name = "flight_id", nullable = false)
+    private FlightEntity flight;
 
     @Column(name = "airline_name", nullable = false)
     private String airlineName;
@@ -23,11 +31,8 @@ public class FlightDetailsEntity extends BaseEntity {
     @Column(name = "plane_model", nullable = false)
     private String planeModel;
 
-    @Column(name = "capacity", nullable = false)
-    private Integer capacity;
+    @Column(name = "allowed_weight", nullable = false)
+    private Double allowedWeight;
 
-    @OneToOne
-    @JoinColumn(name = "flight_id", nullable = false)
-    private FlightEntity flight;
 
 }

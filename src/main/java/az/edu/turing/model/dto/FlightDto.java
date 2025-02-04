@@ -1,13 +1,12 @@
-package az.edu.turing.model;
+package az.edu.turing.model.dto;
 
-import az.edu.turing.model.enums.StatusMessage;
+import az.edu.turing.model.enums.FlightStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @SuperBuilder
@@ -22,7 +21,7 @@ public class FlightDto {
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
     private Integer availableSeats;
-    private StatusMessage flightStatus;
+    private FlightStatus flightStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
