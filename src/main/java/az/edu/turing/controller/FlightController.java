@@ -7,7 +7,6 @@ import az.edu.turing.model.request.flight.CreateFlightRequest;
 import az.edu.turing.model.request.flight.UpdateFlightRequest;
 import az.edu.turing.model.request.flightDetails.CreateFlightDetailRequest;
 import az.edu.turing.model.request.flightDetails.UpdateFlightDetailRequest;
-import az.edu.turing.service.FlightDetailService;
 import az.edu.turing.service.FlightService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -39,8 +38,6 @@ import java.time.LocalDateTime;
 public class FlightController {
 
     private final FlightService flightService;
-    private final FlightDetailService flightDetailsService;
-
 
     @GetMapping
     public ResponseEntity<Page<FlightDto>> getAll(
@@ -66,7 +63,8 @@ public class FlightController {
     }
 
     @PostMapping
-    public ResponseEntity<FlightDto> create(@RequestHeader Long id, @Valid @RequestBody CreateFlightRequest createFlightRequest) {
+    public ResponseEntity<FlightDto> create(@RequestHeader Long id,
+                                            @Valid @RequestBody CreateFlightRequest createFlightRequest) {
         FlightDto flightDto = flightService.create(id, createFlightRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(flightDto);
     }
@@ -91,41 +89,39 @@ public class FlightController {
         return ResponseEntity.noContent().build();
     }
 
-    // Flight Details endpoints
-
     @GetMapping("/{flightId}/details")
     public ResponseEntity<FlightDetailDto> getDetailsByFlightId(@PathVariable("flightId") Long flightId) {
-        FlightDetailDto flightDetails = flightDetailsService.findByFlightId(flightId);
+        FlightDetailDto flightDetails = flightService.findFlightDetailById(flightId);
         return ResponseEntity.ok(flightDetails);
     }
 
     @PostMapping("/{flightId}/details")
-    public ResponseEntity<FlightDetailDto> createDetails(
+    public ResponseEntity<FlightDetailDto> createDetail(
             @PathVariable("flightId") Long flightId,
             @RequestParam(value = "userId") Long userId,
             @Valid @RequestBody CreateFlightDetailRequest request) {
         request.setFlightId(flightId);
-        FlightDetailDto createdDetails = flightDetailsService.create(userId, request);
+        FlightDetailDto createdDetails = flightService.createFlightDetail(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDetails);
     }
 
     @PutMapping("/{flightId}/details/{id}")
-    public ResponseEntity<FlightDetailDto> updateDetails(
+    public ResponseEntity<FlightDetailDto> updateDetail(
             @RequestParam(value = "userId") Long userId,
             @PathVariable("flightId") Long flightId,
             @PathVariable("id") Long id,
             @Valid @RequestBody UpdateFlightDetailRequest request) {
         request.setFlightId(flightId);
-        FlightDetailDto updatedDetails = flightDetailsService.updateByFlightId(userId, id, request);
+        FlightDetailDto updatedDetails = flightService.updateFlightDetail(userId, id, request);
         return ResponseEntity.ok(updatedDetails);
     }
 
     @DeleteMapping("/{flightId}/details/{id}")
-    public ResponseEntity<Void> deleteDetails(
+    public ResponseEntity<Void> deleteDetail(
             @RequestParam(value = "userId") Long userId,
             @PathVariable("flightId") Long flightId,
             @PathVariable("id") Long id) {
-        flightDetailsService.deleteByFlightId(userId, flightId);
+        flightService.deleteFlightDetails(userId, flightId);
         return ResponseEntity.noContent().build();
     }
 }

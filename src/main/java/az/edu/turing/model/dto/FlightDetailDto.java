@@ -17,7 +17,7 @@ public class FlightDetailDto {
 
     private String planeModel;
 
-    private Double allowedWeight;
+    private Double maxWeight;
 
     private Long flightId;
 }

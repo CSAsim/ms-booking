@@ -19,7 +19,7 @@ public class CreateFlightDetailRequest {
     @NotBlank
     private String planeModel;
 
-    private Double allowedWeight;
+    private Double maxWeight;
 
     @Min(1)
     private Long flightId;
