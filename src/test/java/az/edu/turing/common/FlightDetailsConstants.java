@@ -18,15 +18,15 @@ import java.util.List;
 public interface FlightDetailsConstants {
 
     Long ID = 1L;
-    Long FLIGHT_ID = 2L;
-    Long USER_ID = 3L;
+    Long FLIGHT_ID = 1L;
+    Long USER_ID = 1L;
     int PAGE = 1;
     int SIZE = 4;
     String SORT_BY = "id";
     String NAME = "user";
     String AIRLINE_NAME = "airline";
     String PLANE_MODEL = "mode1";
-    Double ALLOWED_WEIGHT = 33.0;
+    Double MAX_WEIGHT = 33.0;
 
     FlightEntity FLIGHT_ENTITY = FlightEntity.builder()
             .id(FLIGHT_ID)
@@ -42,7 +42,7 @@ public interface FlightDetailsConstants {
             .id(ID)
             .airlineName(AIRLINE_NAME)
             .planeModel(PLANE_MODEL)
-            .allowedWeight(ALLOWED_WEIGHT)
+            .maxWeight(MAX_WEIGHT)
             .flight(FLIGHT_ENTITY)
             .build();
 
@@ -50,14 +50,14 @@ public interface FlightDetailsConstants {
             .id(ID)
             .airlineName(AIRLINE_NAME)
             .planeModel(PLANE_MODEL)
-            .allowedWeight(ALLOWED_WEIGHT)
+            .maxWeight(MAX_WEIGHT)
             .flightId(FLIGHT_ID)
             .build();
 
     CreateFlightDetailRequest CREATE_FLIGHT_DETAILS_REQUEST = CreateFlightDetailRequest.builder()
             .airlineName(AIRLINE_NAME)
             .planeModel(PLANE_MODEL)
-            .allowedWeight(ALLOWED_WEIGHT)
+            .maxWeight(MAX_WEIGHT)
             .flightId(FLIGHT_ID)
             .build();
 
@@ -65,10 +65,11 @@ public interface FlightDetailsConstants {
             .flightId(FLIGHT_ID)
             .airlineName(AIRLINE_NAME)
             .planeModel(PLANE_MODEL)
-            .allowedWeight(ALLOWED_WEIGHT)
+            .maxWeight(MAX_WEIGHT)
             .build();
 
     Pageable PAGEABLE = PageRequest.of(PAGE, SIZE, Sort.by(SORT_BY));
-    Page<FlightDetailEntity> FLIGHT_DETAILS_ENTITY_PAGE = new PageImpl<>(List.of(FLIGHT_DETAILS_ENTITY), PAGEABLE, 1);
+    Page<FlightDetailEntity> FLIGHT_DETAILS_ENTITY_PAGE = new PageImpl<>(List.of(FLIGHT_DETAILS_ENTITY),
+            PAGEABLE, 1);
     Page<FlightDetailDto> FLIGHT_DETAILS_DTO_PAGE = new PageImpl<>(List.of(FLIGHT_DETAILS_DTO), PAGEABLE, 1);
 }

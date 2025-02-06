@@ -20,7 +20,7 @@ public class UpdateFlightDetailRequest {
     private String planeModel;
 
     @NotNull
-    private Double allowedWeight;
+    private Double maxWeight;
 
     private Long flightId;
 

@@ -2,7 +2,6 @@ package az.edu.turing.controller;
 
 import az.edu.turing.exception.NotFoundException;
 import az.edu.turing.model.enums.FlightStatus;
-import az.edu.turing.service.FlightDetailService;
 import az.edu.turing.service.FlightService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -37,9 +36,6 @@ class FlightControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @MockBean
-    private FlightDetailService flightDetailsService;
 
     @MockBean
     private FlightService flightService;

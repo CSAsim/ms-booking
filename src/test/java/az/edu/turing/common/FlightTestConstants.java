@@ -5,16 +5,19 @@ import az.edu.turing.model.dto.FlightDto;
 import az.edu.turing.model.enums.FlightStatus;
 import az.edu.turing.model.request.flight.CreateFlightRequest;
 import az.edu.turing.model.request.flight.UpdateFlightRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface FlightTestConstants {
 
     Long ID = 1L;
-    Long USER_ID = 2L;
+    Long USER_ID = 1L;
     int PAGE = 1;
     int SIZE = 4;
     String SORT_BY = "id";
@@ -51,4 +54,7 @@ public interface FlightTestConstants {
             .availableSeats(AVAILABLE_SEATS)
             .flightStatus(FLIGHT_STATUS)
             .build();
+
+    Page<FlightEntity> FLIGHT_ENTITY_PAGE = new PageImpl<>(List.of(FLIGHT_ENTITY), PAGEABLE, 1);
+    Page<FlightDto> FLIGHT_DTO_PAGE = new PageImpl<>(List.of(FLIGHT_DTO), PAGEABLE, 1);
 }

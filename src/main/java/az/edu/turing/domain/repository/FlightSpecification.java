@@ -8,10 +8,6 @@ import java.time.LocalDateTime;
 
 public class FlightSpecification {
 
-    private FlightSpecification() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
-
     public static Specification<FlightEntity> byFilters(String departure, String destination,
                                                         LocalDateTime departureTime, LocalDateTime arrivalTime) {
         return (root, query, criteriaBuilder) -> {

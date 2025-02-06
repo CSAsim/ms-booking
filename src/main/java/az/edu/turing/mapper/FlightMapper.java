@@ -6,6 +6,7 @@ import az.edu.turing.model.request.flight.CreateFlightRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = "spring")
 public interface FlightMapper extends EntityMapper<FlightDto, FlightEntity> {
@@ -15,6 +16,10 @@ public interface FlightMapper extends EntityMapper<FlightDto, FlightEntity> {
     FlightDto toDto(FlightEntity flightEntity);
 
     FlightEntity toEntity(FlightDto dto);
+
+    default Page<FlightDto> toDto(Page<FlightEntity> flightEntities) {
+        return flightEntities.map(this::toDto);
+    }
 
     @Mapping(target = "totalSeats", ignore = true)
     @Mapping(target = "flightStatus", ignore = true)

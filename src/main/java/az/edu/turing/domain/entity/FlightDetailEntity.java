@@ -31,8 +31,7 @@ public class FlightDetailEntity extends BaseEntity {
     @Column(name = "plane_model", nullable = false)
     private String planeModel;
 
-    @Column(name = "allowed_weight", nullable = false)
-    private Double allowedWeight;
-
+    @Column(name = "max_weight", nullable = false)
+    private Double maxWeight;
 
 }
