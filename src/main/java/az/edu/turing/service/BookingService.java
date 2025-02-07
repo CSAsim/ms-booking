@@ -28,14 +28,14 @@ public class BookingService {
     private final BookingMapper bookingMapper;
 
     public Page<BookingDto> findAll(Long userId, Pageable pageable) {
-        checkUserRole(userId);
+        checkIsAdmin(userId);
         return bookingMapper.toDto(
                 bookingRepository.findAll(pageable)
         );
     }
 
     public Page<BookingDto> findAllByFlightId(Long userId, Long id, Pageable pageable) {
-        checkUserRole(userId);
+        checkIsAdmin(userId);
         existsByFlightId(id);
         return bookingMapper.toDto(
                 bookingRepository.findAllByFlightId(id, pageable)
@@ -43,15 +43,17 @@ public class BookingService {
     }
 
     public Page<BookingDto> findAllByPassengerId(Long id, Pageable pageable) {
-        existsByPassengerId(id);
+        existsByUserId(id);
         return bookingMapper.toDto(
                 bookingRepository.findAllByPassengerId(id, pageable)
         );
     }
 
     public BookingDto createBooking(Long userId, CreateBookingRequest request) {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found for id: " + userId));
+        existsByUserId(userId);
+        UserEntity user = UserEntity.builder()
+                .id(userId)
+                .build();
         FlightEntity flight = flightRepository.findById(request.getFlightId())
                 .orElseThrow(() -> new NotFoundException("Flight not found for id: " + request.getFlightId()));
         UserEntity passenger = userRepository.findById(request.getPassengerId())
@@ -68,8 +70,10 @@ public class BookingService {
     }
 
     public BookingDto updateBooking(Long userId, Long id, UpdateBookingRequest request) {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found for id: " + userId));
+        existsByUserId(userId);
+        UserEntity user = UserEntity.builder()
+                .id(userId)
+                .build();
         return bookingRepository.findById(id)
                 .map(bookingEntity -> {
                     bookingEntity.setSeatNumber(request.getSeatNumber());
@@ -83,9 +87,11 @@ public class BookingService {
     }
 
     public BookingDto updateBookingStatus(Long userId, Long id, BookingStatus bookingStatus) {
-        checkUserRole(userId);
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found for id: " + userId));
+        checkIsAdmin(userId);
+        existsByUserId(userId);
+        UserEntity user = UserEntity.builder()
+                .id(userId)
+                .build();
         return bookingRepository.findById(id)
                 .map(bookingEntity -> {
                             bookingEntity.setBookingStatus(bookingStatus);
@@ -98,8 +104,10 @@ public class BookingService {
     }
 
     public void deleteBooking(Long userId, Long id) {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found for id: " + userId));
+        existsByUserId(userId);
+        UserEntity user = UserEntity.builder()
+                .id(userId)
+                .build();
         existsById(id);
         bookingRepository.findById(id)
                 .ifPresent(booking -> {
@@ -109,7 +117,7 @@ public class BookingService {
                 });
     }
 
-    private void checkUserRole(Long userId) {
+    private void checkIsAdmin(Long userId) {
 
         if(!userRepository.isAdmin(userId)) {
             throw new InvalidInputException("You can not get all users infos");
@@ -122,7 +130,7 @@ public class BookingService {
         }
     }
 
-    private void existsByPassengerId(Long id) {
+    private void existsByUserId(Long id) {
         if (!userRepository.existsById(id)) {
             throw new NotFoundException("Passenger not found for id: " + id);
         }

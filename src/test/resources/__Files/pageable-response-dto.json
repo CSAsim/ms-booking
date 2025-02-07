@@ -1,0 +1,15 @@
+{
+  "content" : [
+    {
+      "flightId" : 2,
+      "userId" : 2,
+      "seatNumber" : 23,
+      "bookingStatus" : "PENDING",
+      "totalAmount" : 234.0
+    }
+  ],
+  "totalElements": 25,
+  "totalPages": 3,
+  "pageSize": 10,
+  "pageNumber": 0
+}

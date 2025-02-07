@@ -22,8 +22,8 @@ public interface BookingTestConstants {
     Long USER_ID = 2L;
     Long FLIGHT_ID = 2L;
     Long PASSENGER_ID = 2L;
-    int PAGE = 1;
-    int SIZE = 4;
+    Integer PAGE = 1;
+    Integer SIZE = 1;
     String SORT_BY = "id";
     Integer SEAT_NUMBER = 23;
     Double TOTAL_AMOUNT = 234.0;
@@ -46,16 +46,35 @@ public interface BookingTestConstants {
             .id(ID)
             .flight(FLIGHT_ENTITY)
             .user(USER_ENTITY)
+            .seatNumber(SEAT_NUMBER)
+            .bookingStatus(BookingStatus.PENDING)
+            .totalAmount(TOTAL_AMOUNT)
+            .build();
+
+    BookingEntity BOOKING_ENTITY_2 = BookingEntity.builder()
+            .id(ID)
+            .flight(FLIGHT_ENTITY)
+            .user(USER_ENTITY)
+            .seatNumber(SEAT_NUMBER)
+            .bookingStatus(BookingStatus.PENDING)
+            .totalAmount(TOTAL_AMOUNT)
+            .build();
+
+    BookingEntity BOOKING_ENTITY_3 = BookingEntity.builder()
+            .id(ID)
+            .flight(FLIGHT_ENTITY)
+            .user(USER_ENTITY)
+            .seatNumber(SEAT_NUMBER)
             .bookingStatus(BookingStatus.PENDING)
             .totalAmount(TOTAL_AMOUNT)
             .build();
 
 
     BookingDto BOOKING_DTO = BookingDto.builder()
-            .id(ID)
             .flightId(FLIGHT_ID)
             .userId(PASSENGER_ID)
             .totalAmount(TOTAL_AMOUNT)
+            .seatNumber(SEAT_NUMBER)
             .bookingStatus(BookingStatus.PENDING)
             .build();
 
@@ -72,6 +91,7 @@ public interface BookingTestConstants {
             .totalAmount(TOTAL_AMOUNT)
             .build();
 
-    Page<BookingEntity> BOOKING_ENTITY_PAGE = new PageImpl<>(List.of(BOOKING_ENTITY), PAGEABLE, 1);
-    Page<BookingDto> BOOKING_DTO_PAGE = new PageImpl<>(List.of(BOOKING_DTO), PAGEABLE, 1);
+    Page<BookingEntity> BOOKING_ENTITY_PAGE = new PageImpl<>(List.of(BOOKING_ENTITY), PAGEABLE, 1L);
+    Page<BookingEntity> BOOKING_ENTITY_PAGE_2 = new PageImpl<>(List.of(BOOKING_ENTITY_2), PAGEABLE, 1L);
+    Page<BookingDto> BOOKING_DTO_PAGE = new PageImpl<>(List.of(BOOKING_DTO), PAGEABLE, 1L);
 }
