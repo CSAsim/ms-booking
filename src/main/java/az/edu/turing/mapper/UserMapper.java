@@ -5,12 +5,13 @@ import az.edu.turing.model.dto.UserDto;
 import az.edu.turing.model.request.user.CreateUserRequest;
 import az.edu.turing.model.request.user.UpdateUserRequest;
 import org.mapstruct.Mapper;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
