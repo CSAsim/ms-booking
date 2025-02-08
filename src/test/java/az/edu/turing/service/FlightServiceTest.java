@@ -1,6 +1,8 @@
 package az.edu.turing.service;
 
+import az.edu.turing.domain.entity.FlightDetailEntity;
 import az.edu.turing.domain.entity.UserEntity;
+import az.edu.turing.domain.repository.FlightDetailRepository;
 import az.edu.turing.domain.repository.FlightRepository;
 import az.edu.turing.domain.repository.UserRepository;
 import az.edu.turing.exception.AlreadyExistsException;
@@ -55,6 +57,9 @@ class FlightServiceTest {
     private FlightMapper flightMapper = FlightMapper.INSTANCE;
     @Mock
     private FlightRepository flightRepository;
+
+    @Mock
+    private FlightDetailRepository flightDetailRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -146,6 +151,7 @@ class FlightServiceTest {
 
     @Test
     void createFlight_ShouldCreateFlight() {
+        given(flightDetailRepository.save(any(FlightDetailEntity.class))).willReturn(new FlightDetailEntity());
         given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(flightRepository.existsByFlightNumber(FLIGHT_NUMBER)).willReturn(false);
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(new UserEntity()));
