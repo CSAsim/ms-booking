@@ -32,8 +32,13 @@ public interface FlightTestConstants {
 
     Pageable PAGEABLE = PageRequest.of(PAGE, SIZE, Sort.by(SORT_BY));
 
-    CreateFlightRequest CREATE_FLIGHT_REQUEST = new CreateFlightRequest(DEPARTURE, DESTINATION, DEPARTURE_TIME,
-            FLIGHT_NUMBER, AVAILABLE_SEATS);
+    CreateFlightRequest CREATE_FLIGHT_REQUEST = CreateFlightRequest.builder()
+            .departureLocation(DEPARTURE)
+            .destinationLocation(DESTINATION)
+            .departureTime(DEPARTURE_TIME)
+            .flightNumber(FLIGHT_NUMBER)
+            .availableSeats(AVAILABLE_SEATS)
+            .build();
     UpdateFlightRequest UPDATE_FLIGHT_REQUEST = new UpdateFlightRequest(DEPARTURE, DESTINATION, DEPARTURE_TIME,
             AVAILABLE_SEATS);
 

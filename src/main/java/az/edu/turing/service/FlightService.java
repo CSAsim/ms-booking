@@ -36,7 +36,7 @@ public class FlightService {
     private FlightEntity existingFlight;
     private final FlightMapper flightMapper;
     @Qualifier("flightDetailMapper")
-    private final FlightDetailMapper mapper;
+    private final FlightDetailMapper flightDetailMapper;
     private final FlightRepository flightRepository;
     private final FlightDetailRepository flightDetailRepository;
 
@@ -63,7 +63,7 @@ public class FlightService {
     }
 
     public FlightDetailDto findFlightDetailById(Long flightId) {
-        return mapper.toDto(flightDetailRepository.findByFlightId(flightId)
+        return flightDetailMapper.toDto(flightDetailRepository.findByFlightId(flightId)
                 .orElseThrow(() -> new NotFoundException("Flight not found for id: " + flightId)));
     }
 
@@ -85,6 +85,14 @@ public class FlightService {
         flightEntity.setUpdatedBy(user);
         flightEntity = flightRepository.save(flightEntity);
 
+        FlightDetailEntity flightDetailEntity = FlightDetailEntity.builder()
+                .airlineName(flightRequest.getAirlineName())
+                .planeModel(flightRequest.getPlaneModel())
+                .maxWeight(flightRequest.getMaxWeight())
+                .flight(flightEntity)
+                .build();
+        flightDetailRepository.save(flightDetailEntity);
+
         return flightMapper.toDto(flightEntity);
     }
 
@@ -94,11 +102,11 @@ public class FlightService {
 
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found for id: " + userId));
-        FlightDetailEntity entity = mapper.toEntity(request);
+        FlightDetailEntity entity = flightDetailMapper.toEntity(request);
         entity.setCreatedBy(user);
         entity.setUpdatedBy(user);
 
-        return mapper.toDto(flightDetailRepository.save(entity));
+        return flightDetailMapper.toDto(flightDetailRepository.save(entity));
     }
 
     public FlightDto update(Long userId, Long id, UpdateFlightRequest flightRequest) {
@@ -122,10 +130,10 @@ public class FlightService {
         validateFlightDetailsExists(id);
 
         UserEntity user = getUserEntity(userId);
-        FlightDetailEntity entity = mapper.toEntity(request);
+        FlightDetailEntity entity = flightDetailMapper.toEntity(request);
         entity.setUpdatedBy(user);
 
-        return mapper.toDto(flightDetailRepository.save(entity));
+        return flightDetailMapper.toDto(flightDetailRepository.save(entity));
     }
 
 

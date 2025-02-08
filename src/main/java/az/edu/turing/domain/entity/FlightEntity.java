@@ -36,10 +36,10 @@ public class FlightEntity extends BaseEntity {
     @Column(name = "flight_number", nullable = false)
     private String flightNumber;
 
-    @Column(name = "departure", nullable = false)
+    @Column(name = "departure_location", nullable = false)
     private String departureLocation;
 
-    @Column(name = "destination", nullable = false)
+    @Column(name = "destination_location", nullable = false)
     private String destinationLocation;
 
     @Column(name = "departure_time", nullable = false)

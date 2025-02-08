@@ -18,12 +18,12 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: departure
+                  name: departure_location
                   type: varchar(255)
                   constraints:
                     nullable: false
               - column:
-                  name: destination
+                  name: destination_location
                   type: varchar(255)
                   constraints:
                     nullable: false

@@ -19,7 +19,7 @@ spring:
     enabled: true
     change-log: classpath:db/changelog-master.yml
 server:
-  port: 8088
+  port: 8085
 
 logging:
   level:

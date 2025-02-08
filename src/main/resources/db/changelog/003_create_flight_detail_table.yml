@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 003_create_flight_detail_table
-      author: Nurcan Nefizade
+      author: Nurcan Nafizade
       changes:
         - createTable:
             tableName: flight_detail
@@ -29,7 +29,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: allowed_weight
+                  name: max_weight
                   type: DOUBLE PRECISION
                   constraints:
                     nullable: false

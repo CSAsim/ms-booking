@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 004_create_booking_table
-      author: Nurcan Nefizade
+      author: Asim Panahov
       changes:
         - createTable:
             tableName: booking

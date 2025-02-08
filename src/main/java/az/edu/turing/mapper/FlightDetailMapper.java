@@ -2,6 +2,7 @@ package az.edu.turing.mapper;
 
 import az.edu.turing.domain.entity.FlightDetailEntity;
 import az.edu.turing.model.dto.FlightDetailDto;
+import az.edu.turing.model.request.flight.CreateFlightRequest;
 import az.edu.turing.model.request.flightDetails.CreateFlightDetailRequest;
 import az.edu.turing.model.request.flightDetails.UpdateFlightDetailRequest;
 import org.mapstruct.Mapper;
@@ -24,6 +25,8 @@ public interface FlightDetailMapper {
 
     @Mapping(source = "flightId", target = "flight.id")
     FlightDetailEntity toEntity(CreateFlightDetailRequest request);
+
+    FlightDetailEntity toEntity(CreateFlightRequest request);
 
     @Mapping(source = "flightId", target = "flight.id")
     FlightDetailEntity toEntity(UpdateFlightDetailRequest request);

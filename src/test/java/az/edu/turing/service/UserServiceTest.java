@@ -1,14 +1,9 @@
 package az.edu.turing.service;
 
-import az.edu.turing.domain.entity.UserEntity;
 import az.edu.turing.domain.repository.UserRepository;
 import az.edu.turing.exception.AlreadyExistsException;
-import az.edu.turing.exception.InvalidInputException;
-import az.edu.turing.exception.NotFoundException;
 import az.edu.turing.mapper.UserMapper;
 import az.edu.turing.model.dto.UserDto;
-import az.edu.turing.model.request.user.CreateUserRequest;
-import az.edu.turing.model.request.user.UpdateUserRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +23,7 @@ import static org.mockito.BDDMockito.*;
 class UserServiceTest {
 
     @Spy
-    private UserMapper userMapper;
+    private UserMapper userMapper = UserMapper.INSTANCE;
 
     @Mock
     private UserRepository userRepository;

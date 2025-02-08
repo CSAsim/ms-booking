@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 001_create_user_table
-      author: Nurcan Nefizade
+      author: Javad Nazirli
       changes:
         - createTable:
             tableName: user
