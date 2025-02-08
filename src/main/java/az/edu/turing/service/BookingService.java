@@ -17,9 +17,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BookingService {
 
     private final BookingRepository bookingRepository;
@@ -49,6 +51,7 @@ public class BookingService {
         );
     }
 
+    @Transactional
     public BookingDto createBooking(Long userId, CreateBookingRequest request) {
         existsByUserId(userId);
         UserEntity user = UserEntity.builder()
@@ -69,6 +72,7 @@ public class BookingService {
         return bookingMapper.toDto(bookingRepository.save(booking));
     }
 
+    @Transactional
     public BookingDto updateBooking(Long userId, Long id, UpdateBookingRequest request) {
         existsByUserId(userId);
         UserEntity user = UserEntity.builder()
@@ -86,6 +90,7 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException("Booking not found for id: " + id));
     }
 
+    @Transactional
     public BookingDto updateBookingStatus(Long userId, Long id, BookingStatus bookingStatus) {
         checkIsAdmin(userId);
         existsByUserId(userId);
@@ -103,6 +108,7 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException("Booking not found for id: " + id));
     }
 
+    @Transactional
     public void deleteBooking(Long userId, Long id) {
         existsByUserId(userId);
         UserEntity user = UserEntity.builder()

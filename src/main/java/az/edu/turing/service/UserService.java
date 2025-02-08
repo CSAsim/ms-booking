@@ -14,9 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
@@ -48,6 +50,7 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
+    @Transactional
     public UserDto create(Long userId, CreateUserRequest request) {
         validatePasswords(request);
         checkIfUserExistsByEmail(request.getEmail());
@@ -59,6 +62,7 @@ public class UserService {
         return userMapper.toDto(userRepository.save(user));
     }
 
+    @Transactional
     public UserDto update(Long userId, Long id, UpdateUserRequest userRequest) {
         checkIfUserExistsById(userId);
         UserEntity user = userRepository.findById(id)
@@ -69,6 +73,7 @@ public class UserService {
         return userMapper.toDto(userRepository.save(user));
     }
 
+    @Transactional
     public void delete(Long userId, Long id) {
         checkIfUserExistsById(userId);
         UserEntity user = userRepository.findById(id)

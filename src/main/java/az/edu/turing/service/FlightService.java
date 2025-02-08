@@ -20,22 +20,22 @@ import az.edu.turing.model.request.flight.UpdateFlightRequest;
 import az.edu.turing.model.request.flightDetails.CreateFlightDetailRequest;
 import az.edu.turing.model.request.flightDetails.UpdateFlightDetailRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FlightService {
 
     private final UserRepository userRepository;
     private FlightEntity existingFlight;
     private final FlightMapper flightMapper;
-    @Qualifier("flightDetailMapper")
     private final FlightDetailMapper flightDetailMapper;
     private final FlightRepository flightRepository;
     private final FlightDetailRepository flightDetailRepository;
@@ -72,6 +72,7 @@ public class FlightService {
                 .orElseThrow(() -> new NotFoundException("Flight with number " + flightNumber + " not found")));
     }
 
+    @Transactional
     public FlightDto create(Long userId, CreateFlightRequest flightRequest) {
         checkUserRole(userId);
 
@@ -96,6 +97,7 @@ public class FlightService {
         return flightMapper.toDto(flightEntity);
     }
 
+    @Transactional
     public FlightDetailDto createFlightDetail(Long userId, CreateFlightDetailRequest request) {
         checkUserRole(userId);
         validateFlightExists(request.getFlightId());
@@ -109,6 +111,7 @@ public class FlightService {
         return flightDetailMapper.toDto(flightDetailRepository.save(entity));
     }
 
+    @Transactional
     public FlightDto update(Long userId, Long id, UpdateFlightRequest flightRequest) {
         checkUserRole(userId);
         UserEntity user = getUserEntity(userId);
@@ -123,7 +126,7 @@ public class FlightService {
 
         return flightMapper.toDto(existingFlight);
     }
-
+    @Transactional
     public FlightDetailDto updateFlightDetail(Long userId, Long id, UpdateFlightDetailRequest request) {
         checkUserRole(userId);
         validateFlightExists(request.getFlightId());
@@ -136,7 +139,7 @@ public class FlightService {
         return flightDetailMapper.toDto(flightDetailRepository.save(entity));
     }
 
-
+    @Transactional
     public FlightDto updateFlightNumber(Long userId, Long id, String flightNumber) {
         checkUserRole(userId);
         UserEntity user = getUserEntity(userId);
@@ -149,6 +152,7 @@ public class FlightService {
         return flightMapper.toDto(existingFlight);
     }
 
+    @Transactional
     public FlightDto updateFlightStatus(Long userId, Long id, FlightStatus flightStatus) {
         checkUserRole(userId);
         UserEntity user = getUserEntity(userId);
@@ -166,6 +170,7 @@ public class FlightService {
         flightRepository.decrementAvailableSeats(flightId);
     }
 
+    @Transactional
     public void delete(Long userId, Long id) {
         checkUserRole(userId);
         UserEntity user = getUserEntity(userId);
