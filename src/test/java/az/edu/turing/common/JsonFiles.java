@@ -6,5 +6,4 @@ public interface JsonFiles {
     String UPDATED_BOOKING_REQUEST_JSON = "update-booking-request.json";
     String BOOKING_DTO_JSON = "booking-dto.json";
     String PAGEABLE_RESPONSE_DTO_JSON = "pageable-response-dto.json";
-
 }
