@@ -81,7 +81,8 @@ class BookingControllerTest {
                         .content(json(CREATE_BOOKING_REQUEST_JSON))
                 )
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorMessage").value("Flight not found for id: " + FLIGHT_ID))
+                .andExpect(jsonPath("$.errorMessage").value("Flight not found for id: "
+                        + FLIGHT_ID))
                 .andDo(print());
         then(bookingService).should(times(1)).createBooking(USER_ID, CREATE_BOOKING_REQUEST);
     }

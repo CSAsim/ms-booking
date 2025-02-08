@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 002_create_flight_table
-      author: Nurcan Nefizade
+      author: Nurcan Nafizade
       changes:
         - createTable:
             tableName: flight

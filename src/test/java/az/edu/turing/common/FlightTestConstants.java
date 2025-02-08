@@ -24,7 +24,7 @@ public interface FlightTestConstants {
     String FLIGHT_NUMBER = "flightNumber";
     String DEPARTURE = "Baku";
     String DESTINATION = "Kiev";
-    LocalDateTime DEPARTURE_TIME = LocalDateTime.now();
+    LocalDateTime DEPARTURE_TIME = LocalDateTime.parse("2025-02-08T11:14:11.0252262");
     FlightStatus FLIGHT_STATUS = FlightStatus.PENDING;
     int AVAILABLE_SEATS = 17;
 

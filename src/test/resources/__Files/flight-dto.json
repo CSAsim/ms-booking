@@ -1,0 +1,9 @@
+{
+  "id": 1,
+  "flightNumber": "flightNumber",
+  "arrivalTime": "2025-02-08T11:14:11.0252262",
+  "departure": "Baku",
+  "destination": "Kiev",
+  "availableSeats": 17,
+  "flightStatus": "PENDING"
+}

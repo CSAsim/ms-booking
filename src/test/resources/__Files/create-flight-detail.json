@@ -1,0 +1,6 @@
+{
+  "airlineName": "airline",
+  "planeModel": "model1",
+  "maxWeight": 33.0,
+  "flightId": 1
+}

@@ -25,7 +25,7 @@ public interface FlightDetailsConstants {
     String SORT_BY = "id";
     String NAME = "user";
     String AIRLINE_NAME = "airline";
-    String PLANE_MODEL = "mode1";
+    String PLANE_MODEL = "model1";
     Double MAX_WEIGHT = 33.0;
 
     FlightEntity FLIGHT_ENTITY = FlightEntity.builder()

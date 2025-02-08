@@ -1,0 +1,20 @@
+{
+  "content": [
+    {
+      "id": 1,
+      "flightNumber": "flightNumber",
+      "departure": "Baku",
+      "destination": "Kiev",
+      "departureTime": null,
+      "arrivalTime": "2025-02-08T11:14:11.0252262",
+      "availableSeats": 17,
+      "flightStatus": "PENDING",
+      "createdAt": null,
+      "updatedAt": null
+    }
+  ],
+  "totalPages": 2,
+  "totalElements": 5,
+  "size": 4,
+  "number": 1
+}
