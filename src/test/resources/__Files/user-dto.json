@@ -1,0 +1,8 @@
+{
+  "id": 1,
+  "name": "John",
+  "surname": "Doe",
+  "email": "john.doe@example.com",
+  "phoneNumber": "+1234567890",
+  "userRole": "USER"
+}

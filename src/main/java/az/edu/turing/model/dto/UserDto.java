@@ -1,11 +1,12 @@
 package az.edu.turing.model.dto;
 
 import az.edu.turing.model.enums.UserRole;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDto {
     private Long id;
     private String name;
