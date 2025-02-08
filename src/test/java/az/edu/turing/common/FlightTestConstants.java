@@ -27,6 +27,7 @@ public interface FlightTestConstants {
     LocalDateTime DEPARTURE_TIME = LocalDateTime.parse("2025-02-08T11:14:11.0252262");
     FlightStatus FLIGHT_STATUS = FlightStatus.PENDING;
     int AVAILABLE_SEATS = 17;
+    String BASE_URL = "/api/v1/flights";
 
     Pageable PAGEABLE = PageRequest.of(PAGE, SIZE, Sort.by(SORT_BY));
 

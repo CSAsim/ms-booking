@@ -17,6 +17,7 @@ import static az.edu.turing.common.FlightDetailsConstants.FLIGHT_DETAILS_DTO;
 import static az.edu.turing.common.FlightDetailsConstants.FLIGHT_ID;
 import static az.edu.turing.common.FlightDetailsConstants.UPDATE_FLIGHT_DETAILS_REQUEST;
 import static az.edu.turing.common.FlightDetailsConstants.USER_ID;
+import static az.edu.turing.common.FlightTestConstants.BASE_URL;
 import static az.edu.turing.common.FlightTestConstants.CREATE_FLIGHT_REQUEST;
 import static az.edu.turing.common.FlightTestConstants.FLIGHT_DTO;
 import static az.edu.turing.common.FlightTestConstants.FLIGHT_DTO_PAGE;
@@ -52,9 +53,9 @@ class FlightControllerTest {
     void getAll_ShouldReturnAllFlights() throws Exception {
         given(flightService.findAll(any(), any(), any(), any(), any())).willReturn(FLIGHT_DTO_PAGE);
 
-        String jsonResponse = TestUtil.json("flight-response.json");
+        String jsonResponse = TestUtil.json("pageable-flight-response.json");
 
-        mockMvc.perform(get("/api/v1/flights"))
+        mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
 
@@ -63,10 +64,10 @@ class FlightControllerTest {
 
     @Test
     void getAllIn24Hours_ShouldReturnUpcomingFlights() throws Exception {
-        String jsonResponse = TestUtil.json("flight-response.json");
+        String jsonResponse = TestUtil.json("pageable-flight-response.json");
         given(flightService.findAllIn24Hours(any())).willReturn(FLIGHT_DTO_PAGE);
 
-        mockMvc.perform(get("/api/v1/flights/upcoming"))
+        mockMvc.perform(get(BASE_URL + "/upcoming"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
 
@@ -78,18 +79,19 @@ class FlightControllerTest {
         given(flightService.findById(any())).willReturn(FLIGHT_DTO);
 
         var jsonResponse = TestUtil.json("flight-dto.json");
-        mockMvc.perform(get("/api/v1/flights/{id}", ID))
+
+        mockMvc.perform(get(BASE_URL + "/{id}", ID))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
 
-        then(flightService).should(times(1)).findById(any());
+        then(flightService).should(times(1)).findById(ID);
     }
 
     @Test
     void getById_ShouldReturnNotFound() throws Exception {
         given(flightService.findById(ID)).willThrow(new NotFoundException("Flight not found"));
 
-        mockMvc.perform(get("/api/v1/flights/{id}", ID))
+        mockMvc.perform(get(BASE_URL + "/{id}", ID))
                 .andExpect(status().isNotFound());
 
         then(flightService).should(times(1)).findById(any());
@@ -101,7 +103,7 @@ class FlightControllerTest {
 
         var jsonResponse = TestUtil.json("create-flight-request.json");
 
-        mockMvc.perform(post("/api/v1/flights")
+        mockMvc.perform(post(BASE_URL)
                         .header("id", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(CREATE_FLIGHT_REQUEST)))
@@ -117,7 +119,7 @@ class FlightControllerTest {
 
         var jsonResponse = TestUtil.json("update-flight-request.json");
 
-        mockMvc.perform(put("/api/v1/flights/{id}", ID)
+        mockMvc.perform(put(BASE_URL + "/{id}", ID)
                         .header("userId", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(UPDATE_FLIGHT_REQUEST)))
@@ -134,7 +136,7 @@ class FlightControllerTest {
 
         var jsonResponse = TestUtil.json("update-flight-dto.json");
 
-        mockMvc.perform(patch("/api/v1/flights/{id}/status", ID)
+        mockMvc.perform(patch(BASE_URL + "/{id}/status", ID)
                         .header("userId", USER_ID)
                         .param("flightStatus", FlightStatus.CANCELLED.name()))
                 .andExpect(status().isOk())
@@ -148,7 +150,7 @@ class FlightControllerTest {
     void delete_ShouldDeleteFlight() throws Exception {
         doNothing().when(flightService).delete(USER_ID, ID);
 
-        mockMvc.perform(delete("/api/v1/flights/{id}", ID)
+        mockMvc.perform(delete(BASE_URL + "/{id}", ID)
                         .header("userId", USER_ID))
                 .andExpect(status().isNoContent());
 
@@ -161,7 +163,7 @@ class FlightControllerTest {
 
         var jsonResponse = TestUtil.json("flight-detail-dto.json");
 
-        mockMvc.perform(get("/api/v1/flights/{flightId}/details", ID))
+        mockMvc.perform(get(BASE_URL + "/{flightId}/details", ID))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
 
@@ -174,7 +176,7 @@ class FlightControllerTest {
 
         var jsonResponse = TestUtil.json("create-flight-detail.json");
 
-        mockMvc.perform(post("/api/v1/flights/{flightId}/details", ID)
+        mockMvc.perform(post(BASE_URL + "/{flightId}/details", ID)
                         .param("userId", USER_ID.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(CREATE_FLIGHT_DETAILS_REQUEST)))
@@ -192,7 +194,7 @@ class FlightControllerTest {
 
         var jsonResponse = TestUtil.json("update-flight-detail.json");
 
-        mockMvc.perform(put("/api/v1/flights/{flightId}/details/{id}", FLIGHT_ID, ID)
+        mockMvc.perform(put(BASE_URL + "/{flightId}/details/{id}", FLIGHT_ID, ID)
                         .param("userId", USER_ID.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(UPDATE_FLIGHT_DETAILS_REQUEST)))
@@ -207,7 +209,7 @@ class FlightControllerTest {
     void deleteDetail_ShouldDeleteFlightDetail() throws Exception {
         doNothing().when(flightService).deleteFlightDetails(USER_ID, ID);
 
-        mockMvc.perform(delete("/api/v1/flights/{flightId}/details/{id}", FLIGHT_ID, ID)
+        mockMvc.perform(delete(BASE_URL + "/{flightId}/details/{id}", FLIGHT_ID, ID)
                         .param("userId", USER_ID.toString()))
                 .andExpect(status().isNoContent());
 
