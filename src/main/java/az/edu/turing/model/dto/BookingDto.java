@@ -14,12 +14,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BookingDto {
 
-    private long id;
-    private long flightId;
-    private long userId;
-    private long seatNumber;
+    private Long flightId;
+    private Long userId;
+    private Integer seatNumber;
     private BookingStatus bookingStatus;
-    private double totalAmount;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Double totalAmount;
+    private LocalDateTime departureTime;
+    private LocalDateTime arrivalTime;
 }

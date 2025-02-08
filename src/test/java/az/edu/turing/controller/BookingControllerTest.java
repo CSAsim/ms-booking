@@ -12,7 +12,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static az.edu.turing.common.BookingTestConstants.*;
+import static az.edu.turing.common.BookingTestConstants.BASE_URL;
+import static az.edu.turing.common.BookingTestConstants.BOOKING_DTO;
+import static az.edu.turing.common.BookingTestConstants.BOOKING_DTO_PAGE;
+import static az.edu.turing.common.BookingTestConstants.CREATE_BOOKING_REQUEST;
+import static az.edu.turing.common.BookingTestConstants.FLIGHT_ID;
+import static az.edu.turing.common.BookingTestConstants.ID;
+import static az.edu.turing.common.BookingTestConstants.PASSENGER_ID;
+import static az.edu.turing.common.BookingTestConstants.UPDATE_BOOKING_REQUEST;
+import static az.edu.turing.common.BookingTestConstants.USER_ID;
+import static az.edu.turing.common.JsonFiles.BOOKING_DTO_JSON;
+import static az.edu.turing.common.JsonFiles.CREATE_BOOKING_REQUEST_JSON;
+import static az.edu.turing.common.JsonFiles.UPDATED_BOOKING_REQUEST_JSON;
+import static az.edu.turing.common.TestUtil.json;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -20,9 +32,15 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookingController.class)
 class BookingControllerTest {
@@ -40,13 +58,14 @@ class BookingControllerTest {
     void create_Should_ReturnSuccess() throws Exception {
         given(bookingService.createBooking(USER_ID, CREATE_BOOKING_REQUEST)).willReturn(BOOKING_DTO);
 
+        var response = json(BOOKING_DTO_JSON);
         mockMvc.perform(post(BASE_URL)
                         .header("userid", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(CREATE_BOOKING_REQUEST))
+                        .content(json(CREATE_BOOKING_REQUEST_JSON))
                 )
                 .andExpect(status().isCreated())
-                .andExpect(content().json(objectMapper.writeValueAsString(BOOKING_DTO)))
+                .andExpect(content().json(response))
                 .andDo(print());
         then(bookingService).should(times(1)).createBooking(USER_ID, CREATE_BOOKING_REQUEST);
     }
@@ -59,7 +78,7 @@ class BookingControllerTest {
         mockMvc.perform(post(BASE_URL)
                         .header("userid", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(CREATE_BOOKING_REQUEST))
+                        .content(json(CREATE_BOOKING_REQUEST_JSON))
                 )
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value("Flight not found for id: " + FLIGHT_ID))
@@ -76,21 +95,20 @@ class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray());
-        then(bookingService).should(times(1)).findAll(eq(USER_ID), any(Pageable.class));
+                .andExpect(jsonPath("$.data").isArray());
+        then(bookingService).should(times(1)).findAll(eq(USER_ID),any(Pageable.class));
     }
 
     @Test
     void getAll_Should_ReturnSuccess_When_PassengerIdNotNull() throws Exception {
         given(bookingService.findAllByPassengerId(eq(PASSENGER_ID), any(Pageable.class))).willReturn(BOOKING_DTO_PAGE);
 
-        mockMvc.perform(get(BASE_URL)
+        mockMvc.perform(get(BASE_URL + "/passenger/{id}", PASSENGER_ID)
                         .header("userId", USER_ID)
-                        .param("passengerId", String.valueOf(PASSENGER_ID))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.data").isArray())
                 .andDo(print());
         then(bookingService).should(times(1))
                 .findAllByPassengerId(eq(PASSENGER_ID), any(Pageable.class));
@@ -101,9 +119,8 @@ class BookingControllerTest {
         given(bookingService.findAllByPassengerId(eq(PASSENGER_ID), any(Pageable.class)))
                 .willThrow(new NotFoundException("Passenger not found for id: " + PASSENGER_ID));
 
-        mockMvc.perform(get(BASE_URL)
+        mockMvc.perform(get(BASE_URL + "/passenger/{id}", PASSENGER_ID)
                         .header("userId", USER_ID)
-                        .param("passengerId", String.valueOf(PASSENGER_ID))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isNotFound())
@@ -117,15 +134,14 @@ class BookingControllerTest {
     void getAllByFlightId_Should_ReturnSuccess() throws Exception {
         given(bookingService.findAllByFlightId(eq(USER_ID), eq(FLIGHT_ID), any(Pageable.class))).willReturn(BOOKING_DTO_PAGE);
 
-        mockMvc.perform(get(BASE_URL + "/{flightId}", FLIGHT_ID)
+        mockMvc.perform(get(BASE_URL + "/flight/{flightId}", FLIGHT_ID)
                         .header("userId", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.data").isArray())
                 .andDo(print());
-        then(bookingService).should(times(1))
-                .findAllByFlightId(eq(USER_ID),eq(FLIGHT_ID), any(Pageable.class));
+        then(bookingService).should(times(1)).findAllByFlightId(eq(USER_ID),eq(FLIGHT_ID), any(Pageable.class));
     }
 
     @Test
@@ -133,7 +149,7 @@ class BookingControllerTest {
         given(bookingService.findAllByFlightId(eq(USER_ID),eq(FLIGHT_ID), any(Pageable.class)))
                 .willThrow(new NotFoundException("Flight not found for id: " + FLIGHT_ID));
 
-        mockMvc.perform(get(BASE_URL + "/{flightId}", FLIGHT_ID)
+        mockMvc.perform(get(BASE_URL + "/flight/{flightId}", FLIGHT_ID)
                         .header("userId", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -146,70 +162,73 @@ class BookingControllerTest {
 
     @Test
     void updateBooking_Should_ReturnSuccess() throws Exception {
-        given(bookingService.updateBooking(eq(USER_ID), eq(ID), eq(UPDATE_BOOKING_REQUEST))).willReturn(BOOKING_DTO);
+        given(bookingService.updateBooking(USER_ID, ID, UPDATE_BOOKING_REQUEST)).willReturn(BOOKING_DTO);
 
+        var response = json(BOOKING_DTO_JSON);
         mockMvc.perform(put(BASE_URL + "/{id}", ID)
                         .header("userId", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(UPDATE_BOOKING_REQUEST))
+                        .content(json(UPDATED_BOOKING_REQUEST_JSON))
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(BOOKING_DTO)))
+                .andExpect(content().json(response))
                 .andDo(print());
         then(bookingService).should(times(1))
-                .updateBooking(eq(USER_ID), eq(ID), eq(UPDATE_BOOKING_REQUEST));
+                .updateBooking(USER_ID, ID, UPDATE_BOOKING_REQUEST);
     }
 
     @Test
     void updateBooking_Should_Return404_When_BookingIdIdNotFound() throws Exception {
-        given(bookingService.updateBooking(eq(USER_ID), eq(ID), eq(UPDATE_BOOKING_REQUEST)))
+        given(bookingService.updateBooking(USER_ID, ID, UPDATE_BOOKING_REQUEST))
                 .willThrow(new NotFoundException("Booking not found for id: " + ID));
 
         mockMvc.perform(put(BASE_URL + "/{id}", ID)
                         .header("userId", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(UPDATE_BOOKING_REQUEST))
+                        .content(json(UPDATED_BOOKING_REQUEST_JSON))
                 )
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value("Booking not found for id: " + ID))
                 .andDo(print());
         then(bookingService).should(times(1))
-                .updateBooking(eq(USER_ID), eq(ID), eq(UPDATE_BOOKING_REQUEST));
+                .updateBooking(USER_ID, ID, UPDATE_BOOKING_REQUEST);
     }
 
     @Test
     void updateBookingStatus_Should_ReturnSuccess() throws Exception {
-        given(bookingService.updateBookingStatus(eq(USER_ID), eq(ID), eq(BookingStatus.COMPLETED))).willReturn(BOOKING_DTO);
+        given(bookingService.updateBookingStatus(USER_ID, ID, BookingStatus.COMPLETED)).willReturn(BOOKING_DTO);
 
+        var response = json(BOOKING_DTO_JSON);
         mockMvc.perform(patch(BASE_URL + "/{bookingId}", ID)
                         .header("userId", USER_ID)
                         .param("statusMessage", BookingStatus.COMPLETED.name())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(BOOKING_DTO))
+                        .content(objectMapper.writeValueAsString(BookingStatus.COMPLETED))
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(BOOKING_DTO)))
+                .andExpect(content().json(response))
                 .andDo(print());
         then(bookingService).should(times(1))
-                .updateBookingStatus(eq(USER_ID), eq(ID), eq(BookingStatus.COMPLETED));
+                .updateBookingStatus(USER_ID, ID, BookingStatus.COMPLETED);
     }
 
     @Test
     void updateBookingStatus_Should_Return404_When_BookingIdNotFound() throws Exception {
-        given(bookingService.updateBookingStatus(eq(USER_ID), eq(ID), eq(BookingStatus.COMPLETED)))
+        given(bookingService.updateBookingStatus(USER_ID, ID, BookingStatus.COMPLETED))
+
                 .willThrow(new NotFoundException("Booking not found for id: " + ID));
 
         mockMvc.perform(patch(BASE_URL + "/{bookingId}", ID)
                         .header("userId", USER_ID)
                         .param("statusMessage", BookingStatus.COMPLETED.name())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(BOOKING_DTO))
+                        .content(objectMapper.writeValueAsString(BookingStatus.COMPLETED))
                 )
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value("Booking not found for id: " + ID))
                 .andDo(print());
         then(bookingService).should(times(1))
-                .updateBookingStatus(eq(USER_ID), eq(ID), eq(BookingStatus.COMPLETED));
+                .updateBookingStatus(USER_ID, ID, BookingStatus.COMPLETED);
     }
 
     @Test

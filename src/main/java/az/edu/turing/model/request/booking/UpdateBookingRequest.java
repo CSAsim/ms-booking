@@ -1,7 +1,7 @@
 package az.edu.turing.model.request.booking;
 
 import az.edu.turing.model.enums.BookingStatus;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,13 +12,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateBookingRequest {
-
-    @NotNull
+    @Min(0)
     private Integer seatNumber;
 
-    @NotNull
     private BookingStatus bookingStatus;
 
-    @NotNull
+    @Min(0)
     private Double totalAmount;
 }

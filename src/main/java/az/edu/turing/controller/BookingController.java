@@ -1,6 +1,7 @@
 package az.edu.turing.controller;
 
 import az.edu.turing.model.dto.BookingDto;
+import az.edu.turing.model.dto.PageableResponseDto;
 import az.edu.turing.model.enums.BookingStatus;
 import az.edu.turing.model.request.booking.CreateBookingRequest;
 import az.edu.turing.model.request.booking.UpdateBookingRequest;
@@ -35,25 +36,42 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping
-    public ResponseEntity<Page<BookingDto>> getAll(
-            @RequestHeader Long userId,
-            @RequestParam(value = "passengerId", required = false) Long passengerId,
-            @PageableDefault(size = 10) Pageable pageable) {
-        if (passengerId != null) {
-            return ResponseEntity.ok(bookingService.findAllByPassengerId(passengerId, pageable));
-        }
-        return ResponseEntity.ok(bookingService.findAll(userId, pageable));
+    public ResponseEntity<PageableResponseDto<BookingDto>> getAll(@RequestHeader Long userId,
+                                                                  @PageableDefault(size = 10) Pageable pageable) {
+        Page<BookingDto> bookingPage = bookingService.findAll(userId, pageable);
+        return ResponseEntity.ok(PageableResponseDto.of(bookingPage.getContent(),
+                bookingPage.getPageable().getPageNumber(),
+                bookingPage.getPageable().getPageSize(),
+                bookingPage.getTotalElements(),
+                bookingPage.getTotalPages()));
     }
 
-    @GetMapping("/{flightId}")
-    public ResponseEntity<Page<BookingDto>> getAllByFlightId(@RequestHeader Long userId,
-                                                             @PathVariable("flightId") Long flightId,
-                                                             @PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(bookingService.findAllByFlightId(userId, flightId, pageable));
+    @GetMapping("/passenger/{id}")
+    public ResponseEntity<PageableResponseDto<BookingDto>> getByPassengerId(@PathVariable("id") Long passengerId,
+                                                                            @PageableDefault(size = 10) Pageable pageable) {
+        Page<BookingDto> bookingPage = bookingService.findAllByPassengerId(passengerId, pageable);
+        return ResponseEntity.ok(PageableResponseDto.of(bookingPage.getContent(),
+                bookingPage.getPageable().getPageNumber(),
+                bookingPage.getPageable().getPageSize(),
+                bookingPage.getTotalElements(),
+                bookingPage.getTotalPages()));
+
+    }
+
+    @GetMapping("/flight/{flightId}")
+    public ResponseEntity<PageableResponseDto<BookingDto>> getAllByFlightId(@RequestHeader Long userId,
+                                                                            @PathVariable("flightId") Long flightId,
+                                                                            @PageableDefault(size = 10) Pageable pageable) {
+        Page<BookingDto> bookingPage = bookingService.findAllByFlightId(userId, flightId, pageable);
+        return ResponseEntity.ok(PageableResponseDto.of(bookingPage.getContent(),
+                bookingPage.getPageable().getPageNumber(),
+                bookingPage.getPageable().getPageSize(),
+                bookingPage.getTotalElements(),
+                bookingPage.getTotalPages()));
     }
 
     @PostMapping
-    public ResponseEntity<BookingDto> create(@RequestHeader long userId,
+    public ResponseEntity<BookingDto> create(@RequestHeader Long userId,
                                              @RequestBody @Valid CreateBookingRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(bookingService.createBooking(userId, request));
