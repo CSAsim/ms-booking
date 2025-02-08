@@ -2,6 +2,7 @@ package az.edu.turing.controller;
 
 import az.edu.turing.model.dto.FlightDetailDto;
 import az.edu.turing.model.dto.FlightDto;
+import az.edu.turing.model.dto.PageableResponseDto;
 import az.edu.turing.model.enums.FlightStatus;
 import az.edu.turing.model.request.flight.CreateFlightRequest;
 import az.edu.turing.model.request.flight.UpdateFlightRequest;
@@ -40,20 +41,22 @@ public class FlightController {
     private final FlightService flightService;
 
     @GetMapping
-    public ResponseEntity<Page<FlightDto>> getAll(
+    public ResponseEntity<PageableResponseDto<FlightDto>> getAll(
             @RequestParam(required = false) String departure,
             @RequestParam(required = false) String destination,
             @RequestParam(required = false) LocalDateTime departureTime,
             @RequestParam(required = false) LocalDateTime arrivalTime,
             @PageableDefault(size = 10) Pageable pageable) {
         Page<FlightDto> flights = flightService.findAll(departure, destination, departureTime, arrivalTime, pageable);
-        return ResponseEntity.ok(flights);
+        return ResponseEntity.ok(PageableResponseDto.of(flights.getContent(), flights.getNumber(),
+                flights.getSize(), flights.getTotalElements(), flights.getTotalPages()));
     }
 
     @GetMapping("/upcoming")
-    public ResponseEntity<Page<FlightDto>> getAllIn24Hours(@PageableDefault(size = 10) Pageable pageable) {
+    public ResponseEntity<PageableResponseDto<FlightDto>> getAllIn24Hours(@PageableDefault(size = 10) Pageable pageable) {
         Page<FlightDto> flights = flightService.findAllIn24Hours(pageable);
-        return ResponseEntity.ok(flights);
+        return ResponseEntity.ok(PageableResponseDto.of(flights.getContent(),
+                flights.getNumber(), flights.getSize(), flights.getTotalElements(), flights.getTotalPages()));
     }
 
     @GetMapping("/{id}")

@@ -68,11 +68,8 @@ public class FlightService {
     }
 
     public FlightDto findByFlightNumber(String flightNumber) {
-        FlightEntity flight = flightRepository.findByFlightNumber(flightNumber);
-        if (flight == null) {
-            throw new NotFoundException("Flight not found");
-        }
-        return flightMapper.toDto(flight);
+        return flightMapper.toDto(flightRepository.findByFlightNumber(flightNumber)
+                .orElseThrow(() -> new NotFoundException("Flight with number " + flightNumber + " not found")));
     }
 
     public FlightDto create(Long userId, CreateFlightRequest flightRequest) {
@@ -110,8 +107,8 @@ public class FlightService {
 
         existingFlight = getFlightEntity(id);
         existingFlight.setUpdatedBy(user);
-        existingFlight.setDestination(flightRequest.getDestination());
-        existingFlight.setDeparture(flightRequest.getDeparture());
+        existingFlight.setDestinationLocation(flightRequest.getDestination());
+        existingFlight.setDepartureLocation(flightRequest.getDeparture());
         existingFlight.setDepartureTime(flightRequest.getDepartureTime());
 
         flightRepository.save(existingFlight);

@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
 import java.util.Optional;
 
 import static az.edu.turing.common.FlightTestConstants.CREATE_FLIGHT_REQUEST;
@@ -26,9 +27,11 @@ import static az.edu.turing.common.FlightTestConstants.DEPARTURE;
 import static az.edu.turing.common.FlightTestConstants.DEPARTURE_TIME;
 import static az.edu.turing.common.FlightTestConstants.DESTINATION;
 import static az.edu.turing.common.FlightTestConstants.FLIGHT_DTO;
-import static az.edu.turing.common.FlightTestConstants.FLIGHT_DTO_PAGE;
+import static az.edu.turing.common.FlightTestConstants.FLIGHT_DTO_STATUS_UPDATED;
 import static az.edu.turing.common.FlightTestConstants.FLIGHT_ENTITY;
+import static az.edu.turing.common.FlightTestConstants.FLIGHT_ENTITY_DELETED;
 import static az.edu.turing.common.FlightTestConstants.FLIGHT_ENTITY_PAGE;
+import static az.edu.turing.common.FlightTestConstants.FLIGHT_ENTITY_UPDATED;
 import static az.edu.turing.common.FlightTestConstants.FLIGHT_NUMBER;
 import static az.edu.turing.common.FlightTestConstants.ID;
 import static az.edu.turing.common.FlightTestConstants.PAGEABLE;
@@ -49,7 +52,7 @@ import static org.mockito.BDDMockito.times;
 class FlightServiceTest {
 
     @Spy
-    private FlightMapper flightMapper;
+    private FlightMapper flightMapper = FlightMapper.INSTANCE;
     @Mock
     private FlightRepository flightRepository;
 
@@ -62,13 +65,12 @@ class FlightServiceTest {
     @Test
     void findAll_ShouldReturnAllFlights() {
         given(flightRepository.findAll(any(Specification.class), eq(PAGEABLE))).willReturn(FLIGHT_ENTITY_PAGE);
-        given(flightMapper.toDto(FLIGHT_ENTITY)).willReturn(FLIGHT_DTO);
 
         Page<FlightDto> result = flightService.findAll(DEPARTURE, DESTINATION, DEPARTURE_TIME, null,
                 PAGEABLE);
 
         assertNotNull(result);
-        assertEquals(FLIGHT_DTO_PAGE.getContent(), result.getContent());
+        assertEquals(List.of(FLIGHT_DTO), result.getContent());
 
         then(flightRepository).should(times(1)).findAll(any(Specification.class), eq(PAGEABLE));
     }
@@ -88,12 +90,11 @@ class FlightServiceTest {
     @Test
     void findAllIn24Hours_ShouldReturnFlights() {
         given(flightRepository.findAll(any(Specification.class), eq(PAGEABLE))).willReturn(FLIGHT_ENTITY_PAGE);
-        given(flightMapper.toDto(FLIGHT_ENTITY)).willReturn(FLIGHT_DTO);
 
         Page<FlightDto> result = flightService.findAllIn24Hours(PAGEABLE);
 
         assertNotNull(result);
-        assertEquals(FLIGHT_DTO_PAGE.getContent(), result.getContent());
+        assertEquals(List.of(FLIGHT_DTO), result.getContent());
 
         then(flightRepository).should(times(1)).findAll(any(Specification.class), eq(PAGEABLE));
     }
@@ -102,44 +103,44 @@ class FlightServiceTest {
     @Test
     void findById_ShouldReturnFlight() {
         given(flightRepository.findById(ID)).willReturn(Optional.of(FLIGHT_ENTITY));
-        given(flightMapper.toDto(FLIGHT_ENTITY)).willReturn(FLIGHT_DTO);
 
         FlightDto result = flightService.findById(ID);
         assertNotNull(result);
         assertEquals(FLIGHT_DTO, result);
-        then(flightRepository).should(times(1)).findById(eq(ID));
-        then(flightMapper).should(times(1)).toDto(FLIGHT_ENTITY);
+
+        then(flightRepository).should(times(1)).findById(ID);
     }
 
     @Test
     void findById_ShouldThrowExceptionWhenFlightNotFound() {
-        given(flightRepository.findById(ID)).willReturn(Optional.empty());
+        given(flightRepository.findById(ID)).willThrow(new NotFoundException("Flight with id " + ID + " not found."));
 
-        assertThrows(NotFoundException.class, () -> flightService.findById(ID));
-
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> flightService.findById(ID));
+        assertEquals("Flight with id " + ID + " not found.", exception.getMessage());
         then(flightRepository).should(times(1)).findById(eq(ID));
     }
 
 
     @Test
     void findByFlightNumber_ShouldReturnFlight() {
-        given(flightRepository.findByFlightNumber(FLIGHT_NUMBER)).willReturn(FLIGHT_ENTITY);
+        given(flightRepository.findByFlightNumber(FLIGHT_NUMBER)).willReturn(Optional.of(FLIGHT_ENTITY));
         given(flightMapper.toDto(FLIGHT_ENTITY)).willReturn(FLIGHT_DTO);
 
         FlightDto result = flightService.findByFlightNumber(FLIGHT_NUMBER);
         assertNotNull(result);
         assertEquals(FLIGHT_DTO, result);
 
-        then(flightRepository).should(times(1)).findByFlightNumber(eq(FLIGHT_NUMBER));
+        then(flightRepository).should(times(1)).findByFlightNumber(FLIGHT_NUMBER);
         then(flightMapper).should(times(1)).toDto(FLIGHT_ENTITY);
     }
 
     @Test
     void findByFlightNumber_ShouldThrowExceptionWhenFlightNotFound() {
-        given(flightRepository.findByFlightNumber(FLIGHT_NUMBER)).willReturn(null);
+        given(flightRepository.findByFlightNumber(FLIGHT_NUMBER)).willReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> flightService.findByFlightNumber(FLIGHT_NUMBER));
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> flightService.findByFlightNumber(FLIGHT_NUMBER));
 
+        assertEquals("Flight with number " + FLIGHT_NUMBER + " not found", exception.getMessage());
         then(flightRepository).should(times(1)).findByFlightNumber(eq(FLIGHT_NUMBER));
     }
 
@@ -148,9 +149,7 @@ class FlightServiceTest {
         given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(flightRepository.existsByFlightNumber(FLIGHT_NUMBER)).willReturn(false);
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(new UserEntity()));
-        given(flightMapper.toEntity(CREATE_FLIGHT_REQUEST)).willReturn(FLIGHT_ENTITY);
         given(flightRepository.save(any())).willReturn(FLIGHT_ENTITY);
-        given(flightMapper.toDto(FLIGHT_ENTITY)).willReturn(FLIGHT_DTO);
 
         FlightDto result = flightService.create(USER_ID, CREATE_FLIGHT_REQUEST);
 
@@ -165,23 +164,24 @@ class FlightServiceTest {
 
         assertThrows(AlreadyExistsException.class, () -> flightService.create(USER_ID, CREATE_FLIGHT_REQUEST));
 
+        then(flightRepository).should(times(1)).existsByFlightNumber(FLIGHT_NUMBER);
+        then(userRepository).should(times(1)).isAdmin(USER_ID);
         then(flightRepository).should(never()).save(any());
     }
 
     @Test
     void updateFlight_ShouldUpdateFlight() {
         given(userRepository.isAdmin(USER_ID)).willReturn(true);
-        given(flightRepository.findById(ID)).willReturn(Optional.of(FLIGHT_ENTITY));
+        given(flightRepository.findById(ID)).willReturn(Optional.of(FLIGHT_ENTITY_UPDATED));
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(new UserEntity()));
-        given(flightRepository.save(FLIGHT_ENTITY)).willReturn(FLIGHT_ENTITY);
-        given(flightMapper.toDto(FLIGHT_ENTITY)).willReturn(FLIGHT_DTO);
+        given(flightRepository.save(FLIGHT_ENTITY_UPDATED)).willReturn(FLIGHT_ENTITY_UPDATED);
 
         FlightDto result = flightService.update(USER_ID, ID, UPDATE_FLIGHT_REQUEST);
 
         assertEquals(FLIGHT_DTO, result);
         then(flightRepository).should(times(1)).findById(ID);
-        then(flightRepository).should(times(1)).save(FLIGHT_ENTITY);
-        then(flightMapper).should(times(1)).toDto(FLIGHT_ENTITY);
+        then(flightRepository).should(times(1)).save(FLIGHT_ENTITY_UPDATED);
+        then(flightMapper).should(times(1)).toDto(FLIGHT_ENTITY_UPDATED);
     }
 
     @Test
@@ -193,6 +193,8 @@ class FlightServiceTest {
         assertThrows(NotFoundException.class, () -> flightService.update(USER_ID, ID, UPDATE_FLIGHT_REQUEST));
 
         then(flightRepository).should(times(1)).findById(ID);
+        then(userRepository).should(times(1)).findById(USER_ID);
+        then(userRepository).should(times(1)).isAdmin(USER_ID);
     }
 
     @Test
@@ -206,12 +208,11 @@ class FlightServiceTest {
     @Test
     void updateFlightNumber_ShouldUpdateFlightNumber() {
         given(userRepository.isAdmin(USER_ID)).willReturn(true);
-        given(flightRepository.findById(ID)).willReturn(Optional.of(FLIGHT_ENTITY));
+        given(flightRepository.findById(ID)).willReturn(Optional.of(FLIGHT_ENTITY_UPDATED));
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(new UserEntity()));
-        given(flightRepository.save(FLIGHT_ENTITY)).willReturn(FLIGHT_ENTITY);
-        given(flightMapper.toDto(FLIGHT_ENTITY)).willReturn(FLIGHT_DTO);
+        given(flightRepository.save(FLIGHT_ENTITY_UPDATED)).willReturn(FLIGHT_ENTITY_UPDATED);
 
-        FlightDto result = flightService.updateFlightNumber(USER_ID, ID, "new_flight_number");
+        FlightDto result = flightService.updateFlightNumber(USER_ID, ID, FLIGHT_NUMBER);
 
         assertEquals(FLIGHT_DTO, result);
 
@@ -229,16 +230,19 @@ class FlightServiceTest {
         assertThrows(NotFoundException.class, () -> flightService.updateFlightNumber(USER_ID, ID,
                 "new_flight_number"));
 
-       then(flightRepository).should(times(1)).findById(ID);
+
+        then(flightRepository).should(times(1)).findById(ID);
+        then(userRepository).should(times(1)).findById(USER_ID);
+        then(userRepository).should(times(1)).isAdmin(USER_ID);
     }
 
     @Test
     void updateFlightStatus_ShouldUpdateFlightStatus() {
         given(userRepository.isAdmin(USER_ID)).willReturn(true);
-        given(flightRepository.findById(ID)).willReturn(Optional.of(FLIGHT_ENTITY));
+        given(flightRepository.findById(ID)).willReturn(Optional.of(FLIGHT_ENTITY_UPDATED));
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(new UserEntity()));
-        given(flightRepository.save(FLIGHT_ENTITY)).willReturn(FLIGHT_ENTITY);
-        given(flightMapper.toDto(FLIGHT_ENTITY)).willReturn(FLIGHT_DTO);
+        given(flightRepository.save(FLIGHT_ENTITY_UPDATED)).willReturn(FLIGHT_ENTITY_UPDATED);
+        given(flightMapper.toDto(FLIGHT_ENTITY_UPDATED)).willReturn(FLIGHT_DTO_STATUS_UPDATED);
 
         FlightDto result = flightService.updateFlightStatus(USER_ID, ID, FlightStatus.COMPLETED);
 
@@ -257,19 +261,22 @@ class FlightServiceTest {
 
         assertThrows(NotFoundException.class, () -> flightService.updateFlightStatus(USER_ID, ID,
                 FlightStatus.COMPLETED));
-
-       then(flightRepository).should(times(1)).findById(ID);
+        then(userRepository).should(times(1)).findById(USER_ID);
+        then(userRepository).should(times(1)).isAdmin(USER_ID);
+        then(flightRepository).should(times(1)).findById(ID);
     }
 
     @Test
     void deleteFlight_ShouldDeleteFlight() {
         given(userRepository.isAdmin(USER_ID)).willReturn(true);
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(new UserEntity()));
-        given(flightRepository.findById(ID)).willReturn(Optional.of(FLIGHT_ENTITY));
-        given(flightRepository.save(FLIGHT_ENTITY)).willReturn(FLIGHT_ENTITY);
+        given(flightRepository.findById(ID)).willReturn(Optional.of(FLIGHT_ENTITY_DELETED));
+        given(flightRepository.save(FLIGHT_ENTITY_DELETED)).willReturn(FLIGHT_ENTITY_DELETED);
 
         flightService.delete(USER_ID, ID);
 
+        then(userRepository).should(times(1)).findById(USER_ID);
+        then(userRepository).should(times(1)).isAdmin(USER_ID);
         then(flightRepository).should(times(1)).findById(ID);
     }
 
@@ -281,7 +288,10 @@ class FlightServiceTest {
 
         assertThrows(NotFoundException.class, () -> flightService.delete(USER_ID, ID));
 
+
         then(flightRepository).should(times(1)).findById(ID);
+        then(userRepository).should(times(1)).findById(USER_ID);
+        then(userRepository).should(times(1)).isAdmin(USER_ID);
     }
 
 }

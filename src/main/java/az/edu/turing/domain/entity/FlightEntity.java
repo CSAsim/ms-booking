@@ -37,10 +37,10 @@ public class FlightEntity extends BaseEntity {
     private String flightNumber;
 
     @Column(name = "departure", nullable = false)
-    private String departure;
+    private String departureLocation;
 
     @Column(name = "destination", nullable = false)
-    private String destination;
+    private String destinationLocation;
 
     @Column(name = "departure_time", nullable = false)
     private LocalDateTime departureTime;

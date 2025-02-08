@@ -14,14 +14,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class FlightDto {
 
-    private Long id;
     private String flightNumber;
-    private String departure;
-    private String destination;
+    private String departureLocation;
+    private String destinationLocation;
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
     private Integer availableSeats;
     private FlightStatus flightStatus;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

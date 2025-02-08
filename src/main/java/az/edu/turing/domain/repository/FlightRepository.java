@@ -8,10 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface FlightRepository extends JpaRepository<FlightEntity, Long>, JpaSpecificationExecutor<FlightEntity> {
 
-    FlightEntity findByFlightNumber(String flightNumber);
+    Optional<FlightEntity> findByFlightNumber(String flightNumber);
 
     @Modifying
     @Query("UPDATE FlightEntity f SET f.availableSeats = f.availableSeats - 1 WHERE f.id = :flightId AND " +

@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 public class CreateFlightRequest {
 
     @NotBlank
-    private String departure;
+    private String departureLocation;
 
     @NotBlank
-    private String destination;
+    private String destinationLocation;
     private LocalDateTime departureTime;
 
     @NotBlank

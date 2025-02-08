@@ -25,6 +25,7 @@ public interface FlightTestConstants {
     String DEPARTURE = "Baku";
     String DESTINATION = "Kiev";
     LocalDateTime DEPARTURE_TIME = LocalDateTime.parse("2025-02-08T11:14:11.0252262");
+    LocalDateTime ARRIVAL_TIME = LocalDateTime.parse("2025-02-08T11:14:11.0252262");
     FlightStatus FLIGHT_STATUS = FlightStatus.PENDING;
     int AVAILABLE_SEATS = 17;
     String BASE_URL = "/api/v1/flights";
@@ -39,18 +40,49 @@ public interface FlightTestConstants {
     FlightEntity FLIGHT_ENTITY = FlightEntity.builder()
             .id(ID)
             .flightNumber(FLIGHT_NUMBER)
-            .departure(DEPARTURE)
-            .destination(DESTINATION)
+            .departureLocation(DEPARTURE)
+            .destinationLocation(DESTINATION)
+            .departureTime(DEPARTURE_TIME)
+            .arrivalTime(DEPARTURE_TIME)
+            .availableSeats(AVAILABLE_SEATS)
+            .flightStatus(FLIGHT_STATUS)
+            .build();
+
+    FlightEntity FLIGHT_ENTITY_UPDATED = FlightEntity.builder()
+            .id(ID)
+            .flightNumber(FLIGHT_NUMBER)
+            .departureLocation(DEPARTURE)
+            .destinationLocation(DESTINATION)
+            .departureTime(DEPARTURE_TIME)
             .arrivalTime(DEPARTURE_TIME)
             .availableSeats(AVAILABLE_SEATS)
             .flightStatus(FLIGHT_STATUS)
             .build();
 
     FlightDto FLIGHT_DTO = FlightDto.builder()
+            .flightNumber(FLIGHT_NUMBER)
+            .departureLocation(DEPARTURE)
+            .destinationLocation(DESTINATION)
+            .departureTime(DEPARTURE_TIME)
+            .arrivalTime(DEPARTURE_TIME)
+            .availableSeats(AVAILABLE_SEATS)
+            .flightStatus(FLIGHT_STATUS)
+            .build();
+
+    FlightDto FLIGHT_DTO_STATUS_UPDATED = FlightDto.builder()
+            .flightNumber(FLIGHT_NUMBER)
+            .departureLocation(DEPARTURE)
+            .destinationLocation(DESTINATION)
+            .arrivalTime(DEPARTURE_TIME)
+            .availableSeats(AVAILABLE_SEATS)
+            .flightStatus(FlightStatus.COMPLETED)
+            .build();
+
+    FlightEntity FLIGHT_ENTITY_DELETED = FlightEntity.builder()
             .id(ID)
             .flightNumber(FLIGHT_NUMBER)
-            .departure(DEPARTURE)
-            .destination(DESTINATION)
+            .departureLocation(DEPARTURE)
+            .destinationLocation(DESTINATION)
             .arrivalTime(DEPARTURE_TIME)
             .availableSeats(AVAILABLE_SEATS)
             .flightStatus(FLIGHT_STATUS)
